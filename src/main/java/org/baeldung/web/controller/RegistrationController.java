@@ -102,7 +102,7 @@ public class RegistrationController {
         user.setEnabled(true);
         userService.saveRegisteredUser(user);
         model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
-        return "redirect:/login.html?lang=" + locale.getLanguage();
+        return "redirect:/login?lang=" + locale.getLanguage();
     }
 
     // user activation - verification
@@ -141,7 +141,7 @@ public class RegistrationController {
     public String showChangePasswordPage(final Locale locale, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) {
         final PasswordResetToken passToken = userService.getPasswordResetToken(token);
         final User user = passToken.getUser();
-        if (passToken == null || user.getId() != id) {
+        if ((passToken == null) || (user.getId() != id)) {
             final String message = messages.getMessage("auth.message.invalidToken", null, locale);
             model.addAttribute("message", message);
             return "redirect:/login.html?lang=" + locale.getLanguage();
