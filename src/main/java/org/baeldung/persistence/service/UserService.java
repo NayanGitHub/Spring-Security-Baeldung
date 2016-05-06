@@ -1,6 +1,7 @@
 package org.baeldung.persistence.service;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -12,8 +13,12 @@ import org.baeldung.persistence.dao.VerificationTokenRepository;
 import org.baeldung.persistence.model.PasswordResetToken;
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
-import org.baeldung.validation.EmailExistsException;
+import org.baeldung.web.error.UserAlreadyExistException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +40,15 @@ public class UserService implements IUserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     // API
 
     @Override
-    public User registerNewUserAccount(final UserDto accountDto) throws EmailExistsException {
+    public User registerNewUserAccount(final UserDto accountDto) {
         if (emailExist(accountDto.getEmail())) {
-            throw new EmailExistsException("There is an account with that email adress: " + accountDto.getEmail());
+            throw new UserAlreadyExistException("There is an account with that email adress: " + accountDto.getEmail());
         }
         final User user = new User();
 
@@ -123,6 +131,42 @@ public class UserService implements IUserService {
     @Override
     public boolean checkIfValidOldPassword(final User user, final String oldPassword) {
         return passwordEncoder.matches(oldPassword, user.getPassword());
+    }
+
+    @Override
+    public String validatePasswordResetToken(long id, String token) {
+        final PasswordResetToken passToken = passwordTokenRepository.findByToken(token);
+        if ((passToken == null) || (passToken.getUser().getId() != id)) {
+            return "invalidToken";
+        }
+
+        final Calendar cal = Calendar.getInstance();
+        if ((passToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            return "expired";
+        }
+
+        final User user = passToken.getUser();
+        final Authentication auth = new UsernamePasswordAuthenticationToken(user, null, userDetailsService.loadUserByUsername(user.getEmail()).getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        return null;
+    }
+
+    @Override
+    public String validateVerificationToken(String token) {
+        final VerificationToken verificationToken = tokenRepository.findByToken(token);
+        if (verificationToken == null) {
+            return "invalidToken";
+        }
+
+        final User user = verificationToken.getUser();
+        final Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            return "expired";
+        }
+
+        user.setEnabled(true);
+        repository.save(user);
+        return null;
     }
 
     private boolean emailExist(final String email) {

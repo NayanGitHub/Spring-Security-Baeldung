@@ -13,7 +13,6 @@ import org.baeldung.persistence.model.VerificationToken;
 import org.baeldung.persistence.service.IUserService;
 import org.baeldung.persistence.service.UserDto;
 import org.baeldung.registration.OnRegistrationCompleteEvent;
-import org.baeldung.validation.EmailExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +103,7 @@ public class OldRegistrationController {
     public ModelAndView registerUserAccount(@ModelAttribute("user") @Valid final UserDto userDto, final HttpServletRequest request, final Errors errors) {
         LOGGER.debug("Registering user account with information: {}", userDto);
 
-        final User registered = createUserAccount(userDto);
+        final User registered = userService.registerNewUserAccount(userDto);
         if (registered == null) {
             // result.rejectValue("email", "message.regError");
             return new ModelAndView("registration", "user", userDto);
@@ -172,7 +171,7 @@ public class OldRegistrationController {
 
         final PasswordResetToken passToken = userService.getPasswordResetToken(token);
         final User user = passToken.getUser();
-        if (passToken == null || user.getId() != id) {
+        if ((passToken == null) || (user.getId() != id)) {
             final String message = messages.getMessage("auth.message.invalidToken", null, locale);
             model.addAttribute("message", message);
             return "redirect:/login.html?lang=" + locale.getLanguage();
@@ -223,15 +222,5 @@ public class OldRegistrationController {
         email.setText(message + " \r\n" + url);
         email.setFrom(env.getProperty("support.email"));
         return email;
-    }
-
-    private User createUserAccount(final UserDto accountDto) {
-        User registered = null;
-        try {
-            registered = userService.registerNewUserAccount(accountDto);
-        } catch (final EmailExistsException e) {
-            return null;
-        }
-        return registered;
     }
 }

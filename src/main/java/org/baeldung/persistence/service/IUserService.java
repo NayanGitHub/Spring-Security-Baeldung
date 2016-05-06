@@ -3,11 +3,10 @@ package org.baeldung.persistence.service;
 import org.baeldung.persistence.model.PasswordResetToken;
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
-import org.baeldung.validation.EmailExistsException;
 
 public interface IUserService {
 
-    User registerNewUserAccount(UserDto accountDto) throws EmailExistsException;
+    User registerNewUserAccount(UserDto accountDto);
 
     User getUser(String verificationToken);
 
@@ -34,5 +33,9 @@ public interface IUserService {
     void changeUserPassword(User user, String password);
 
     boolean checkIfValidOldPassword(User user, String password);
+
+    String validatePasswordResetToken(long id, String token);
+
+    String validateVerificationToken(String token);
 
 }
