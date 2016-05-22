@@ -29,18 +29,15 @@ public class User {
 
     private boolean enabled;
 
-    private boolean tokenExpired;
-
     //
 
     @ManyToMany
-    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id") , inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id") )
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
 
     public User() {
         super();
         this.enabled = false;
-        this.tokenExpired = false;
     }
 
     public Long getId() {
@@ -99,19 +96,11 @@ public class User {
         this.enabled = enabled;
     }
 
-    public boolean isTokenExpired() {
-        return tokenExpired;
-    }
-
-    public void setTokenExpired(final boolean expired) {
-        this.tokenExpired = expired;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((email == null) ? 0 : email.hashCode());
+        result = (prime * result) + ((email == null) ? 0 : email.hashCode());
         return result;
     }
 
