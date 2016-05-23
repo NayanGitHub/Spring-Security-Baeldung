@@ -2,6 +2,8 @@ package org.baeldung.spring;
 
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -15,6 +17,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @ComponentScan(basePackages = { "org.baeldung.registration" })
 @PropertySource("classpath:email.properties")
 public class AppConfig {
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private Environment env;
@@ -29,11 +32,17 @@ public class AppConfig {
     @Bean
     public JavaMailSenderImpl javaMailSenderImpl() {
         final JavaMailSenderImpl mailSenderImpl = new JavaMailSenderImpl();
-        mailSenderImpl.setHost(env.getProperty("smtp.host"));
-        mailSenderImpl.setPort(env.getProperty("smtp.port", Integer.class));
-        mailSenderImpl.setProtocol(env.getProperty("smtp.protocol"));
-        mailSenderImpl.setUsername(env.getProperty("smtp.username"));
-        mailSenderImpl.setPassword(env.getProperty("smtp.password"));
+
+        try {
+            mailSenderImpl.setHost(env.getRequiredProperty("smtp.host"));
+            mailSenderImpl.setPort(env.getRequiredProperty("smtp.port", Integer.class));
+            mailSenderImpl.setProtocol(env.getRequiredProperty("smtp.protocol"));
+            mailSenderImpl.setUsername(env.getRequiredProperty("smtp.username"));
+            mailSenderImpl.setPassword(env.getRequiredProperty("smtp.password"));
+        } catch(IllegalStateException ise) {
+            LOGGER.error("Could not resolve email.properties.  See email.properties.sample");
+            throw ise;
+        }
         final Properties javaMailProps = new Properties();
         javaMailProps.put("mail.smtp.auth", true);
         javaMailProps.put("mail.smtp.starttls.enable", true);

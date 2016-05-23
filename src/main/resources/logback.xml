@@ -7,6 +7,9 @@
 		</encoder>
 	</appender>
 
+	<!-- to view SQL statements, change to DEBUG -->
+	<logger name="org.hibernate.SQL" level="WARN" />
+
 	<logger name="org.springframework" level="WARN" />
 	<logger name="org.springframework.transaction" level="WARN" />
 
