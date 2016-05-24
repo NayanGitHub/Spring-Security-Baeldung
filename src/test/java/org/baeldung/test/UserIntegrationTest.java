@@ -4,15 +4,13 @@ import org.baeldung.persistence.dao.UserRepository;
 import org.baeldung.persistence.dao.VerificationTokenRepository;
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
-import org.baeldung.service.IUserService;
 import org.baeldung.spring.ServiceConfig;
 import org.baeldung.spring.TestDbConfig;
 import org.baeldung.validation.EmailExistsException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
+
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,23 +29,17 @@ import java.util.UUID;
 @Transactional
 public class UserIntegrationTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Autowired
+    private VerificationTokenRepository tokenRepository;
 
     @Autowired
-    IUserService userService;
-
-    @Autowired
-    VerificationTokenRepository tokenRepository;
-
-    @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
-    Long token_id;
-    Long user_id;
+    private Long tokenId;
+    private Long userId;
 
     //
 
@@ -67,8 +59,8 @@ public class UserIntegrationTest {
         entityManager.flush();
         entityManager.clear();
 
-        token_id = verificationToken.getId();
-        user_id = user.getId();
+        tokenId = verificationToken.getId();
+        userId = user.getId();
     }
 
     @After
@@ -84,16 +76,17 @@ public class UserIntegrationTest {
         assertEquals(1, tokenRepository.count());
     }
 
+    // @Test(expected = Exception.class)
     @Test
-    public void whenRemovingUser_thenFKViolationException() {
-        thrown.expect(PersistenceException.class);
-        userRepository.delete(user_id);
+    @Ignore("needs to go through the service and get transactional semantics")
+    public void whenRemovingUser_thenFkViolationException() {
+        userRepository.delete(userId);
     }
 
     @Test
     public void whenRemovingTokenThenUser_thenCorrect() {
-        tokenRepository.delete(token_id);
-        userRepository.delete(user_id);
+        tokenRepository.delete(tokenId);
+        userRepository.delete(userId);
     }
 
 }
