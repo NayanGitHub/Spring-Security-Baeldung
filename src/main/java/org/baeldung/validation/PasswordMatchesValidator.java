@@ -3,7 +3,7 @@ package org.baeldung.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import org.baeldung.persistence.service.UserDto;
+import org.baeldung.web.dto.UserDto;
 
 public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, Object> {
 

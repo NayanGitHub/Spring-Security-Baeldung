@@ -16,7 +16,7 @@ import java.util.Properties;
 @Configuration
 @Primary
 @ComponentScan({ "org.baeldung.persistence.dao" })
-public class TestDBConfig extends PersistenceJPAConfig {
+public class TestDbConfig extends PersistenceJPAConfig {
 
     @Bean
     public PasswordEncoder encoder() {

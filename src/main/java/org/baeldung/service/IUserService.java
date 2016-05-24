@@ -1,8 +1,9 @@
-package org.baeldung.persistence.service;
+package org.baeldung.service;
 
 import org.baeldung.persistence.model.PasswordResetToken;
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
+import org.baeldung.web.dto.UserDto;
 
 public interface IUserService {
 
@@ -33,8 +34,6 @@ public interface IUserService {
     void changeUserPassword(User user, String password);
 
     boolean checkIfValidOldPassword(User user, String password);
-
-    String validatePasswordResetToken(long id, String token);
 
     String validateVerificationToken(String token);
 

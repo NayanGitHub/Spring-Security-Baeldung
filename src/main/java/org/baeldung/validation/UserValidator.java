@@ -1,6 +1,6 @@
 package org.baeldung.validation;
 
-import org.baeldung.persistence.service.UserDto;
+import org.baeldung.web.dto.UserDto;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;

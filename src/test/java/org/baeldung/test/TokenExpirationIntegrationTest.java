@@ -4,7 +4,7 @@ import org.baeldung.persistence.dao.UserRepository;
 import org.baeldung.persistence.dao.VerificationTokenRepository;
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
-import org.baeldung.spring.TestDBConfig;
+import org.baeldung.spring.TestDbConfig;
 import org.baeldung.spring.TestTaskConfig;
 import org.baeldung.task.TokensPurgeTask;
 import org.junit.After;
@@ -28,24 +28,26 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestDBConfig.class, TestTaskConfig.class }, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = { TestDbConfig.class, TestTaskConfig.class }, loader = AnnotationConfigContextLoader.class)
 @Transactional
-public class TokenExpirationTest {
+public class TokenExpirationIntegrationTest {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    VerificationTokenRepository tokenRepository;
+    private VerificationTokenRepository tokenRepository;
 
     @Autowired
-    TokensPurgeTask tokensPurgeTask;
+    private TokensPurgeTask tokensPurgeTask;
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
-    Long token_id;
-    Long user_id;
+    private Long token_id;
+    private Long user_id;
+
+    //
 
     @Before
     public void givenUserWithExpiredToken() {

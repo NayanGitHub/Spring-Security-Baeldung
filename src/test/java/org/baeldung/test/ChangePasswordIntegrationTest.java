@@ -29,10 +29,10 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { Application.class, TestDBConfig.class, TestIntegrationConfig.class })
+@SpringApplicationConfiguration(classes = { Application.class, TestDbConfig.class, TestIntegrationConfig.class })
 @WebAppConfiguration
 @IntegrationTest(value = "server.port:0")
-public class ChangePasswordTest {
+public class ChangePasswordIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -45,6 +45,8 @@ public class ChangePasswordTest {
 
     private FormAuthConfig formConfig;
     private String URL;
+
+    //
 
     @Before
     public void init() {

@@ -8,9 +8,10 @@ import javax.validation.Valid;
 
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
-import org.baeldung.persistence.service.IUserService;
-import org.baeldung.persistence.service.UserDto;
 import org.baeldung.registration.OnRegistrationCompleteEvent;
+import org.baeldung.security.ISecurityUserService;
+import org.baeldung.service.IUserService;
+import org.baeldung.web.dto.UserDto;
 import org.baeldung.web.error.InvalidOldPasswordException;
 import org.baeldung.web.error.UserNotFoundException;
 import org.baeldung.web.util.GenericResponse;
@@ -37,6 +38,9 @@ public class RegistrationController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private ISecurityUserService securityUserService;
 
     @Autowired
     private MessageSource messages;
@@ -108,7 +112,7 @@ public class RegistrationController {
 
     @RequestMapping(value = "/user/changePassword", method = RequestMethod.GET)
     public String showChangePasswordPage(final Locale locale, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) {
-        final String result = userService.validatePasswordResetToken(id, token);
+        final String result = securityUserService.validatePasswordResetToken(id, token);
         if (result != null) {
             model.addAttribute("message", messages.getMessage("auth.message." + result, null, locale));
             return "redirect:/login?lang=" + locale.getLanguage();

@@ -4,8 +4,9 @@ import org.baeldung.persistence.dao.UserRepository;
 import org.baeldung.persistence.dao.VerificationTokenRepository;
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
-import org.baeldung.persistence.service.IUserService;
-import org.baeldung.spring.TestDBConfig;
+import org.baeldung.service.IUserService;
+import org.baeldung.spring.ServiceConfig;
+import org.baeldung.spring.TestDbConfig;
 import org.baeldung.validation.EmailExistsException;
 import org.junit.After;
 import org.junit.Before;
@@ -26,7 +27,7 @@ import javax.persistence.PersistenceException;
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestDBConfig.class }, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = { TestDbConfig.class, ServiceConfig.class }, loader = AnnotationConfigContextLoader.class)
 @Transactional
 public class UserIntegrationTest {
 
@@ -47,6 +48,8 @@ public class UserIntegrationTest {
 
     Long token_id;
     Long user_id;
+
+    //
 
     @Before
     public void givenUserAndVerificationToken() throws EmailExistsException {
@@ -73,6 +76,8 @@ public class UserIntegrationTest {
         entityManager.flush();
     }
 
+    //
+
     @Test
     public void whenContextLoad_thenCorrect() {
         assertEquals(1, userRepository.count());
@@ -90,4 +95,5 @@ public class UserIntegrationTest {
         tokenRepository.delete(token_id);
         userRepository.delete(user_id);
     }
+
 }
