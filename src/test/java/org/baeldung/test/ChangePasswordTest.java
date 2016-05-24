@@ -59,13 +59,13 @@ public class ChangePasswordTest {
             userRepository.save(user);
         } else {
             user.setPassword(passwordEncoder.encode("test"));
-            userRepository.save(user); }
-
+            userRepository.save(user);
+        }
 
         RestAssured.port = port;
 
         String URL_PREFIX = "http://localhost:" + String.valueOf(port);
-        URL =  URL_PREFIX + "/user/updatePassword";
+        URL = URL_PREFIX + "/user/updatePassword";
         formConfig = new FormAuthConfig(URL_PREFIX + "/login", "username", "password");
     }
 
@@ -73,22 +73,14 @@ public class ChangePasswordTest {
     public void givenNotAuthenticatedUser_whenLoggingIn_thenCorrect() {
         final RequestSpecification request = RestAssured.given().auth().form("test@test.com", "test", formConfig);
 
-        request
-            .when().get("/homepage.html")
-            .then()
-                .assertThat().statusCode(200)
-            .and()
-                .body(containsString("home"));
+        request.when().get("/homepage.html").then().assertThat().statusCode(200).and().body(containsString("home"));
     }
 
     @Test
     public void givenNotAuthenticatedUser_whenBadPasswordLoggingIn_thenCorrect() {
         final RequestSpecification request = RestAssured.given().auth().form("XXXXXXXX@XXXXXXXXX.com", "XXXXXXXX", formConfig).redirects().follow(false);
 
-        request
-                .when().get("/homepage.html")
-                .then().statusCode(IsNot.not(200))
-                .body(isEmptyOrNullString());
+        request.when().get("/homepage.html").then().statusCode(IsNot.not(200)).body(isEmptyOrNullString());
     }
 
     @Test

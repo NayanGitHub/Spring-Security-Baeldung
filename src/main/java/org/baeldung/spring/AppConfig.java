@@ -39,7 +39,7 @@ public class AppConfig {
             mailSenderImpl.setProtocol(env.getRequiredProperty("smtp.protocol"));
             mailSenderImpl.setUsername(env.getRequiredProperty("smtp.username"));
             mailSenderImpl.setPassword(env.getRequiredProperty("smtp.password"));
-        } catch(IllegalStateException ise) {
+        } catch (IllegalStateException ise) {
             LOGGER.error("Could not resolve email.properties.  See email.properties.sample");
             throw ise;
         }

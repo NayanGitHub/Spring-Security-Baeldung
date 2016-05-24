@@ -29,4 +29,3 @@ public class TokensPurgeTask {
         tokenRepository.deleteAllExpiredSince(now);
     }
 }
-

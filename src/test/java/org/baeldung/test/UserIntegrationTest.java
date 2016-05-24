@@ -20,12 +20,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import java.util.UUID;
-
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestDBConfig.class }, loader = AnnotationConfigContextLoader.class)
@@ -93,4 +91,3 @@ public class UserIntegrationTest {
         userRepository.delete(user_id);
     }
 }
-

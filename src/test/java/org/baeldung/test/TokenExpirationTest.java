@@ -57,7 +57,7 @@ public class TokenExpirationTest {
 
         entityManager.persist(user);
         String token = UUID.randomUUID().toString();
-        VerificationToken verificationToken = new VerificationToken(token,user);
+        VerificationToken verificationToken = new VerificationToken(token, user);
         verificationToken.setExpiryDate(Date.from(Instant.now().minus(2, ChronoUnit.DAYS)));
 
         entityManager.persist(verificationToken);
@@ -86,8 +86,7 @@ public class TokenExpirationTest {
         VerificationToken verificationToken = tokenRepository.findOne(token_id);
         assertNotNull(verificationToken);
 
-        assertTrue(tokenRepository.findAllByExpiryDateLessThan(Date.from(Instant.now()))
-              .anyMatch((token) -> token.equals(verificationToken)));
+        assertTrue(tokenRepository.findAllByExpiryDateLessThan(Date.from(Instant.now())).anyMatch((token) -> token.equals(verificationToken)));
     }
 
     @After
@@ -113,4 +112,3 @@ public class TokenExpirationTest {
         assertNull(tokenRepository.findOne(token_id));
     }
 }
-
