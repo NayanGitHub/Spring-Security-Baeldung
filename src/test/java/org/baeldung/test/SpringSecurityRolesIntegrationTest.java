@@ -12,6 +12,7 @@ import org.baeldung.persistence.dao.UserRepository;
 import org.baeldung.persistence.model.Privilege;
 import org.baeldung.persistence.model.Role;
 import org.baeldung.persistence.model.User;
+import org.baeldung.spring.TestDBConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestConfig.class }, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = { TestDBConfig.class }, loader = AnnotationConfigContextLoader.class)
 @Transactional
-@TransactionConfiguration
 public class SpringSecurityRolesIntegrationTest {
 
     @Autowired

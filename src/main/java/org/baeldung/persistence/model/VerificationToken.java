@@ -3,13 +3,7 @@ package org.baeldung.persistence.model;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
 public class VerificationToken {
@@ -23,7 +17,7 @@ public class VerificationToken {
     private String token;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "user_id")
+    @JoinColumn(nullable = false, name = "user_id", foreignKey = @ForeignKey( name = "FK_VERIFY_USER" ))
     private User user;
 
     private Date expiryDate;
@@ -45,6 +39,10 @@ public class VerificationToken {
         this.token = token;
         this.user = user;
         this.expiryDate = calculateExpiryDate(EXPIRATION);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getToken() {

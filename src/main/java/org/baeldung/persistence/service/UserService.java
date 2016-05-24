@@ -79,6 +79,16 @@ public class UserService implements IUserService {
 
     @Override
     public void deleteUser(final User user) {
+        VerificationToken verificationToken = tokenRepository.findByUser(user);
+
+        if(verificationToken != null)
+            tokenRepository.delete(verificationToken);
+
+        PasswordResetToken passwordToken = passwordTokenRepository.findByUser(user);
+
+        if(passwordToken != null)
+            passwordTokenRepository.delete(passwordToken);
+
         repository.delete(user);
     }
 

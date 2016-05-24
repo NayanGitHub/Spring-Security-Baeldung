@@ -47,7 +47,9 @@ public class PasswordResetToken {
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
+
     //
+    public Long getId() { return id; }
 
     public String getToken() {
         return token;
