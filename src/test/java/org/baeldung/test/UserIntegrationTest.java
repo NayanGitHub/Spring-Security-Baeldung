@@ -7,6 +7,7 @@ import org.baeldung.persistence.model.VerificationToken;
 import org.baeldung.spring.ServiceConfig;
 import org.baeldung.spring.TestDbConfig;
 import org.baeldung.validation.EmailExistsException;
+import org.h2.message.DbException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.validation.ConstraintViolationException;
 
 import java.util.UUID;
 
@@ -66,6 +69,7 @@ public class UserIntegrationTest {
     @After
     public void flushAfter() {
         entityManager.flush();
+        entityManager.clear();
     }
 
     //
@@ -76,7 +80,7 @@ public class UserIntegrationTest {
         assertEquals(1, tokenRepository.count());
     }
 
-    // @Test(expected = Exception.class)
+//    @Test(expected = Exception.class)
     @Test
     @Ignore("needs to go through the service and get transactional semantics")
     public void whenRemovingUser_thenFkViolationException() {
