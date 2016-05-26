@@ -38,6 +38,9 @@ public class UserService implements IUserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    public static final String TOKEN_INVALID = "invalidToken";
+    public static final String TOKEN_EXPIRED = "expired";
+
     // API
 
     @Override
@@ -142,16 +145,17 @@ public class UserService implements IUserService {
     public String validateVerificationToken(String token) {
         final VerificationToken verificationToken = tokenRepository.findByToken(token);
         if (verificationToken == null) {
-            return "invalidToken";
+            return TOKEN_INVALID;
         }
 
         final User user = verificationToken.getUser();
         final Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-            return "expired";
+            return TOKEN_EXPIRED;
         }
 
         user.setEnabled(true);
+        tokenRepository.delete(verificationToken);
         repository.save(user);
         return null;
     }
