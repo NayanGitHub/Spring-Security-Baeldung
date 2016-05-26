@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 public class UserService implements IUserService {
-    
+
     @Autowired
     private UserRepository repository;
 

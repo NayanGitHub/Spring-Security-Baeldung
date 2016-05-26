@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -48,26 +47,7 @@ public class UserServiceIntegrationTest {
     @Autowired
     private VerificationTokenRepository tokenRepository;
 
-    private UserDto createUserDto(final String email) {
-        final UserDto userDto = new UserDto();
-        userDto.setEmail(email);
-        userDto.setPassword("SecretPassword");
-        userDto.setMatchingPassword("SecretPassword");
-        userDto.setFirstName("First");
-        userDto.setLastName("Last");
-        userDto.setRole(0);
-        return userDto;
-    }
-
-    private User registerUser() {
-        final String email = UUID.randomUUID().toString();
-        final UserDto userDto = createUserDto(email);
-        final User user = userService.registerNewUserAccount(userDto);
-        assertNotNull(user);
-        assertNotNull(user.getId());
-        assertEquals(email, user.getEmail());
-        return user;
-    }
+    //
 
     @Test
     public void givenNewUser_whenRegistered_thenCorrect() throws EmailExistsException {
@@ -97,16 +77,15 @@ public class UserServiceIntegrationTest {
     public void givenDetachedUser_whenServiceLoadById_thenCorrect() throws EmailExistsException {
         final User user = registerUser();
         final User user2 = userService.getUserByID(user.getId());
-        assertEquals(user,user2);
+        assertEquals(user, user2);
     }
 
     @Test
     public void givenDetachedUser_whenServiceLoadByEmail_thenCorrect() throws EmailExistsException {
         final User user = registerUser();
         final User user2 = userService.findUserByEmail(user.getEmail());
-        assertEquals(user,user2);
+        assertEquals(user, user2);
     }
-
 
     @Test(expected = UserAlreadyExistException.class)
     public void givenUserRegistered_whenDuplicatedRegister_thenCorrect() {
@@ -118,8 +97,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Transactional
-    public void givenUserRegistered_whenDtoRoleAdmin_thenUserNotAdmin()
-    {
+    public void givenUserRegistered_whenDtoRoleAdmin_thenUserNotAdmin() {
         assertNotNull(roleRepository);
         final UserDto userDto = new UserDto();
         userDto.setEmail(UUID.randomUUID().toString());
@@ -136,34 +114,31 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void givenUserRegistered_whenCreateToken_thenCorrect()
-    {
+    public void givenUserRegistered_whenCreateToken_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
+        userService.createVerificationTokenForUser(user, token);
     }
 
     @Test
-    public void givenUserRegistered_whenCreateTokenCreateDuplicate_thenCorrect()
-    {
+    public void givenUserRegistered_whenCreateTokenCreateDuplicate_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
-        userService.createVerificationTokenForUser(user,token);
+        userService.createVerificationTokenForUser(user, token);
+        userService.createVerificationTokenForUser(user, token);
     }
 
     @Test
-    public void givenUserAndToken_whenLoadToken_thenCorrect()
-    {
+    public void givenUserAndToken_whenLoadToken_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
+        userService.createVerificationTokenForUser(user, token);
         final VerificationToken verificationToken = userService.getVerificationToken(token);
         assertNotNull(verificationToken);
         assertNotNull(verificationToken.getId());
         assertNotNull(verificationToken.getUser());
-        assertEquals(user,verificationToken.getUser());
-        assertEquals(user.getId(),verificationToken.getUser().getId());
+        assertEquals(user, verificationToken.getUser());
+        assertEquals(user.getId(), verificationToken.getUser().getId());
         assertEquals(token, verificationToken.getToken());
         assertTrue(verificationToken.getExpiryDate().toInstant().isAfter(Instant.now()));
     }
@@ -172,7 +147,7 @@ public class UserServiceIntegrationTest {
     public void givenUserAndToken_whenRemovingUser_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
+        userService.createVerificationTokenForUser(user, token);
         userService.deleteUser(user);
     }
 
@@ -180,7 +155,7 @@ public class UserServiceIntegrationTest {
     public void givenUserAndToken_whenRemovingUserByDao_thenFKViolation() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
+        userService.createVerificationTokenForUser(user, token);
         final long userId = user.getId();
         userService.getVerificationToken(token).getId();
         userRepository.delete(userId);
@@ -190,9 +165,9 @@ public class UserServiceIntegrationTest {
     public void givenUserAndToken_whenRemovingTokenThenUser_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
+        userService.createVerificationTokenForUser(user, token);
         final long userId = user.getId();
-        final long tokenId  = userService.getVerificationToken(token).getId();
+        final long tokenId = userService.getVerificationToken(token).getId();
         tokenRepository.delete(tokenId);
         userRepository.delete(userId);
     }
@@ -201,8 +176,8 @@ public class UserServiceIntegrationTest {
     public void givenUserAndToken_whenRemovingToken_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
-        final long tokenId  = userService.getVerificationToken(token).getId();
+        userService.createVerificationTokenForUser(user, token);
+        final long tokenId = userService.getVerificationToken(token).getId();
         tokenRepository.delete(tokenId);
     }
 
@@ -210,19 +185,19 @@ public class UserServiceIntegrationTest {
     public void givenUserAndToken_whenNewTokenRequest_thenCorrect() {
         final User user = registerUser();
         final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
+        userService.createVerificationTokenForUser(user, token);
         final VerificationToken origToken = userService.getVerificationToken(token);
         final VerificationToken newToken = userService.generateNewVerificationToken(token);
-        assertNotEquals(newToken.getToken(),origToken.getToken());
-        assertNotEquals(newToken.getExpiryDate(),origToken.getExpiryDate());
-        assertNotEquals(newToken,origToken);
+        assertNotEquals(newToken.getToken(), origToken.getToken());
+        assertNotEquals(newToken.getExpiryDate(), origToken.getExpiryDate());
+        assertNotEquals(newToken, origToken);
     }
 
     @Test
     public void givenTokenValidation_whenValid_thenUserEnabled_andTokenRemoved() {
         User user = registerUser();
         final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
+        userService.createVerificationTokenForUser(user, token);
         final long userId = user.getId();
         final String token_status = userService.validateVerificationToken(token);
         assertNull(token_status);
@@ -236,7 +211,7 @@ public class UserServiceIntegrationTest {
         User user = registerUser();
         final String token = UUID.randomUUID().toString();
         final String invalid_token = "INVALID_" + UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
+        userService.createVerificationTokenForUser(user, token);
         userService.getVerificationToken(token).getId();
         final String token_status = userService.validateVerificationToken(invalid_token);
         token_status.equals(UserService.TOKEN_INVALID);
@@ -246,15 +221,37 @@ public class UserServiceIntegrationTest {
     public void givenTokenValidation_whenExpired_thenCorrect() {
         User user = registerUser();
         final String token = UUID.randomUUID().toString();
-        userService.createVerificationTokenForUser(user,token);
+        userService.createVerificationTokenForUser(user, token);
         final long userId = user.getId();
         final VerificationToken verificationToken = userService.getVerificationToken(token);
-        verificationToken.setExpiryDate(
-                Date.from(verificationToken.getExpiryDate().toInstant().minus(2, ChronoUnit.DAYS)));
+        verificationToken.setExpiryDate(Date.from(verificationToken.getExpiryDate().toInstant().minus(2, ChronoUnit.DAYS)));
         tokenRepository.saveAndFlush(verificationToken);
         final String token_status = userService.validateVerificationToken(token);
         assertNotNull(token_status);
         token_status.equals(UserService.TOKEN_EXPIRED);
+    }
+
+    //
+
+    private UserDto createUserDto(final String email) {
+        final UserDto userDto = new UserDto();
+        userDto.setEmail(email);
+        userDto.setPassword("SecretPassword");
+        userDto.setMatchingPassword("SecretPassword");
+        userDto.setFirstName("First");
+        userDto.setLastName("Last");
+        userDto.setRole(0);
+        return userDto;
+    }
+
+    private User registerUser() {
+        final String email = UUID.randomUUID().toString();
+        final UserDto userDto = createUserDto(email);
+        final User user = userService.registerNewUserAccount(userDto);
+        assertNotNull(user);
+        assertNotNull(user.getId());
+        assertEquals(email, user.getEmail());
+        return user;
     }
 
 }
