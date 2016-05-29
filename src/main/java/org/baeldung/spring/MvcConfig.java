@@ -96,16 +96,11 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public PasswordMatchesValidator passwordMatchesValidator() {
         return new PasswordMatchesValidator();
     }
-    
-    @Bean
-    @ConditionalOnMissingBean(RequestContextListener.class)
-    public RequestContextListener requestContextListener() {
-        return new RequestContextListener();
-    }
 
     @Bean
     @ConditionalOnMissingBean(RequestContextListener.class)
     public RequestContextListener requestContextListener() {
         return new RequestContextListener();
     }
+    
 }
