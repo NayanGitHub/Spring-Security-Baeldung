@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class UserSecurityService implements ISecurityUserService {
 
+    @Autowired
     private PasswordResetTokenRepository passwordTokenRepository;
 
     @Autowired
