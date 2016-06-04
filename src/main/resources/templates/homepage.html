@@ -23,6 +23,8 @@
 	    <p th:text="${param.user[0]}">user</p>
 	     
 	    <a class="btn btn-default" th:href="@{/admin.html}" th:text="#{label.pages.admin}">admin</a>
+	   
+	    <a th:href="@{/loggedUsers}" th:text="#{label.pages.users.message}">View logged in users</a>
     </div>
 </body>
 </html>
