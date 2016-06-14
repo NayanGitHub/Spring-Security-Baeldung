@@ -23,64 +23,79 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 @EnableWebSecurity
 public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-	@Autowired
-	private AuthenticationSuccessHandler myAuthenticationSuccessHandler;
+    @Autowired
+    private AuthenticationSuccessHandler myAuthenticationSuccessHandler;
 
-	@Autowired
-	private LogoutSuccessHandler myLogoutSuccessHandler;
-	
-	@Autowired
-	private AuthenticationFailureHandler authenticationFailureHandler;
+    @Autowired
+    private LogoutSuccessHandler myLogoutSuccessHandler;
 
-	public SecSecurityConfig() {
-		super();
-	}
+    @Autowired
+    private AuthenticationFailureHandler authenticationFailureHandler;
 
-	@Override
-	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(authProvider());
-	}
+    public SecSecurityConfig() {
+        super();
+    }
 
-	@Override
-	public void configure(final WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/resources/**");
-	}
+    @Override
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authProvider());
+    }
 
-	@Override
-	protected void configure(final HttpSecurity http) throws Exception {
-		// @formatter:off
-		http.csrf().disable().authorizeRequests()
-				.antMatchers("/login*", "/login*", "/logout*", "/signin/**", "/signup/**", "/user/registration*",
-						"/regitrationConfirm*", "/expiredAccount*", "/registration*", "/badUser*",
-						"/user/resendRegistrationToken*", "/forgetPassword*", "/user/resetPassword*",
-						"/user/changePassword*", "/emailError*", "/resources/**", "/old/user/registration*",
-						"/successRegister*", "/loggedUsers*")
-				.permitAll().antMatchers("/invalidSession*").anonymous().anyRequest().authenticated().and().formLogin()
-				.loginPage("/login").defaultSuccessUrl("/homepage.html").failureUrl("/login?error=true")
-				.successHandler(myAuthenticationSuccessHandler).failureHandler(authenticationFailureHandler).permitAll()
-				.and().sessionManagement().invalidSessionUrl("/invalidSession.html").sessionFixation().none().and()
-				.logout().logoutSuccessHandler(myLogoutSuccessHandler)
-				.invalidateHttpSession(false).logoutSuccessUrl("/logout.html?logSucc=true")
-				.deleteCookies("JSESSIONID").permitAll();
-		// @formatter:on
-	}
+    @Override
+    public void configure(final WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/resources/**");
+    }
 
-	// beans
+    @Override
+    protected void configure(final HttpSecurity http) throws Exception {
+        // @formatter:off
+        http
+            .csrf().disable()
+            .authorizeRequests()
+                .antMatchers("/login*","/login*", "/logout*", "/signin/**", "/signup/**",
+                        "/user/registration*", "/regitrationConfirm*", "/expiredAccount*", "/registration*",
+                        "/badUser*", "/user/resendRegistrationToken*" ,"/forgetPassword*", "/user/resetPassword*",
+                        "/user/changePassword*", "/emailError*", "/resources/**","/old/user/registration*","/successRegister*").permitAll()
+                .antMatchers("/invalidSession*").anonymous()
+                .anyRequest().authenticated()
+                .and()
+            .formLogin()
+                .loginPage("/login")
+                .defaultSuccessUrl("/homepage.html")
+                .failureUrl("/login?error=true")
+                .successHandler(myAuthenticationSuccessHandler)
+                .failureHandler(authenticationFailureHandler)
+            .permitAll()
+                .and()
+            .sessionManagement()
+                .invalidSessionUrl("/invalidSession.html")
+                .sessionFixation().none()
+            .and()
+            .logout()
+                .logoutSuccessHandler(myLogoutSuccessHandler)
+                .invalidateHttpSession(false)
+                .logoutSuccessUrl("/logout.html?logSucc=true")
+                .deleteCookies("JSESSIONID")
+                .permitAll();
+    // @formatter:on
+    }
 
-	@Bean
-	public DaoAuthenticationProvider authProvider() {
-		final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService(userDetailsService);
-		authProvider.setPasswordEncoder(encoder());
-		return authProvider;
-	}
+    // beans
 
-	@Bean
-	public PasswordEncoder encoder() {
-		return new BCryptPasswordEncoder(11);
-	}
+    @Bean
+    public DaoAuthenticationProvider authProvider() {
+        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(encoder());
+        return authProvider;
+    }
+
+    @Bean
+    public PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder(11);
+    }
 
 }
