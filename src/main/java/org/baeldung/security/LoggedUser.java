@@ -4,23 +4,19 @@ import java.util.List;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
 
-import org.baeldung.web.dto.LoggedUserDto;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.session.SessionDestroyedEvent;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LoggedUser implements HttpSessionBindingListener {
 
-    String username;
+    private String username;
+    
+    public LoggedUser(String username) {
+        this.username = username;
+    }
+    
+    public LoggedUser() {}
 
     @Override
     public void valueBound(HttpSessionBindingEvent event) {
