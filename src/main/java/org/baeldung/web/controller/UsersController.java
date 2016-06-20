@@ -18,7 +18,6 @@ public class UsersController {
     @RequestMapping(value = "/loggedUsers", method = RequestMethod.GET)
     public String getLoggedUsers(final Locale locale, final Model model) {
         model.addAttribute("users", activeUserStore.getUsers());
-        System.out.println(activeUserStore.getUsers());
         return "users";
     }
 }
