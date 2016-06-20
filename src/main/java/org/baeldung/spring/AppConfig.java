@@ -2,6 +2,7 @@ package org.baeldung.spring;
 
 import java.util.Properties;
 
+import org.baeldung.security.ActiveUserStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,11 @@ public class AppConfig {
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceHolderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
+    }
+    
+    @Bean
+    public ActiveUserStore activeUserStore(){
+        return new ActiveUserStore();
     }
 
     @Bean
