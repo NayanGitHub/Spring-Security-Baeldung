@@ -49,6 +49,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         registry.addViewController("/forgetPassword.html");
         registry.addViewController("/updatePassword.html");
         registry.addViewController("/changePassword.html");
+        registry.addViewController("/users.html");
     }
 
     @Override
@@ -102,5 +103,5 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public RequestContextListener requestContextListener() {
         return new RequestContextListener();
     }
-    
+
 }
