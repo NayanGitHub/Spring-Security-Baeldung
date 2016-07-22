@@ -18,10 +18,4 @@ public class Application extends SpringBootServletInitializer {
         return new RequestContextListener();
     }
 
-    // @Override
-    // public void onStartup(ServletContext servletContext) throws ServletException {
-    // super.onStartup(servletContext);
-    // servletContext.addListener(new RequestContextListener());
-    // }
-
 }
