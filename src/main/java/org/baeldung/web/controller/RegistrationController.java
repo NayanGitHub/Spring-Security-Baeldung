@@ -11,6 +11,7 @@ import org.baeldung.persistence.model.VerificationToken;
 import org.baeldung.registration.OnRegistrationCompleteEvent;
 import org.baeldung.security.ISecurityUserService;
 import org.baeldung.service.IUserService;
+import org.baeldung.web.dto.PasswordDto;
 import org.baeldung.web.dto.UserDto;
 import org.baeldung.web.error.InvalidOldPasswordException;
 import org.baeldung.web.error.UserNotFoundException;
@@ -123,9 +124,9 @@ public class RegistrationController {
     @RequestMapping(value = "/user/savePassword", method = RequestMethod.POST)
     @PreAuthorize("hasRole('READ_PRIVILEGE')")
     @ResponseBody
-    public GenericResponse savePassword(final Locale locale, @RequestParam("password") final String password) {
+    public GenericResponse savePassword(final Locale locale, @Valid PasswordDto passwordDto) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userService.changeUserPassword(user, password);
+        userService.changeUserPassword(user, passwordDto.getNewPassword());
         return new GenericResponse(messages.getMessage("message.resetPasswordSuc", null, locale));
     }
 
@@ -133,12 +134,12 @@ public class RegistrationController {
     @RequestMapping(value = "/user/updatePassword", method = RequestMethod.POST)
     @PreAuthorize("hasRole('READ_PRIVILEGE')")
     @ResponseBody
-    public GenericResponse changeUserPassword(final Locale locale, @RequestParam("password") final String password, @RequestParam("oldpassword") final String oldPassword) {
+    public GenericResponse changeUserPassword(final Locale locale, @Valid PasswordDto passwordDto) {
         final User user = userService.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        if (!userService.checkIfValidOldPassword(user, oldPassword)) {
+        if (!userService.checkIfValidOldPassword(user, passwordDto.getOldPassword())) {
             throw new InvalidOldPasswordException();
         }
-        userService.changeUserPassword(user, password);
+        userService.changeUserPassword(user, passwordDto.getNewPassword());
         return new GenericResponse(messages.getMessage("message.updatePasswordSuc", null, locale));
     }
 
