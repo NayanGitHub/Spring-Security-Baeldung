@@ -13,7 +13,7 @@
 		<intercept-url pattern="/signin/**" access="permitAll" />
 		<intercept-url pattern="/signup/**" access="permitAll" />
 		<intercept-url pattern="/user/registration*" access="permitAll" />
-		<intercept-url pattern="/regitrationConfirm*" access="permitAll" />
+		<intercept-url pattern="/registrationConfirm*" access="permitAll" />
 		<intercept-url pattern="/expiredAccount*" access="permitAll" />
 		<intercept-url pattern="/registration*" access="permitAll" />
 		<intercept-url pattern="/badUser*" access="permitAll" />
