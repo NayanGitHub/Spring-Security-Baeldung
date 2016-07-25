@@ -71,14 +71,14 @@ public class RegistrationController {
         return new GenericResponse("success");
     }
 
-    @RequestMapping(value = "/regitrationConfirm", method = RequestMethod.GET)
+    @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
     public String confirmRegistration(final Locale locale, final Model model, @RequestParam("token") final String token) {
         final String result = userService.validateVerificationToken(token);
         if (result == null) {
             model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
             return "redirect:/login?lang=" + locale.getLanguage();
         }
-        if (result == "expired") {
+        if ("expired".equals(result)) {
             model.addAttribute("expired", true);
             model.addAttribute("token", token);
         }
@@ -145,13 +145,13 @@ public class RegistrationController {
 
     // NON-API
 
-    private final SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
+    private SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
         final String confirmationUrl = contextPath + "/registrationConfirm.html?token=" + newToken.getToken();
         final String message = messages.getMessage("message.resendToken", null, locale);
         return constructEmail("Resend Registration Token", message + " \r\n" + confirmationUrl, user);
     }
 
-    private final SimpleMailMessage constructResetTokenEmail(final String contextPath, final Locale locale, final String token, final User user) {
+    private SimpleMailMessage constructResetTokenEmail(final String contextPath, final Locale locale, final String token, final User user) {
         final String url = contextPath + "/user/changePassword?id=" + user.getId() + "&token=" + token;
         final String message = messages.getMessage("message.resetPassword", null, locale);
         return constructEmail("Reset Password", message + " \r\n" + url, user);

@@ -73,7 +73,7 @@ public class OldRegistrationController {
         return "registration";
     }
 
-    @RequestMapping(value = "/regitrationConfirm", method = RequestMethod.GET)
+    @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
     public String confirmRegistration(final HttpServletRequest request, final Model model, @RequestParam("token") final String token) {
         final Locale locale = request.getLocale();
 
