@@ -10,6 +10,7 @@ import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
 import org.baeldung.registration.OnRegistrationCompleteEvent;
 import org.baeldung.security.ISecurityUserService;
+import org.baeldung.captcha.ICaptchaService;
 import org.baeldung.service.IUserService;
 import org.baeldung.web.dto.UserDto;
 import org.baeldung.web.error.InvalidOldPasswordException;
@@ -43,6 +44,9 @@ public class RegistrationController {
     private ISecurityUserService securityUserService;
 
     @Autowired
+    private ICaptchaService captchaService;
+
+    @Autowired
     private MessageSource messages;
 
     @Autowired
@@ -65,6 +69,9 @@ public class RegistrationController {
     public GenericResponse registerUserAccount(@Valid final UserDto accountDto, final HttpServletRequest request) {
         LOGGER.debug("Registering user account with information: {}", accountDto);
 
+        final String response = request.getParameter("g-recaptcha-response");
+        captchaService.processResponseToken(response);
+
         final User registered = userService.registerNewUserAccount(accountDto);
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
         return new GenericResponse("success");
@@ -77,7 +84,7 @@ public class RegistrationController {
             model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
             return "redirect:/login?lang=" + locale.getLanguage();
         }
-        if (result == "expired") {
+        if ("expired".equals(result)) {
             model.addAttribute("expired", true);
             model.addAttribute("token", token);
         }
