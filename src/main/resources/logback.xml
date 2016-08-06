@@ -7,6 +7,8 @@
 		</encoder>
 	</appender>
 
+	<logger name="org.baeldung" level="DEBUG" />
+
 	<!-- to view SQL statements, change to DEBUG -->
 	<logger name="org.hibernate.SQL" level="WARN" />
 

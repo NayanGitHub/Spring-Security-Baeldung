@@ -4,8 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Service("reCaptchaAttemptService")
@@ -28,21 +26,12 @@ public class ReCaptchaAttemptService {
     }
 
     public void reCaptchaFailed(final String key) {
-        int attempts = 0;
-        try {
-            attempts = attemptsCache.get(key);
-        } catch (final ExecutionException e) {
-            attempts = 0;
-        }
+        int attempts = attemptsCache.getUnchecked(key);
         attempts++;
         attemptsCache.put(key, attempts);
     }
 
     public boolean isBlocked(final String key) {
-        try {
-            return attemptsCache.get(key) >= MAX_ATTEMPT;
-        } catch (final ExecutionException e) {
-            return false;
-        }
+        return attemptsCache.getUnchecked(key) >= MAX_ATTEMPT;
     }
 }
