@@ -3,7 +3,7 @@ package org.baeldung.captcha;
 import org.baeldung.web.error.ReCaptchaInvalidException;
 
 public interface ICaptchaService {
-    void processResponseToken(final String responseToken) throws ReCaptchaInvalidException;
+    void processResponse(final String response) throws ReCaptchaInvalidException;
 
     String getReCaptchaSite();
 

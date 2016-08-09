@@ -30,27 +30,27 @@ public class CaptchaService implements ICaptchaService {
     @Autowired
     private RestOperations restTemplate;
 
-    private static final Pattern TOKEN_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
+    private static final Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
 
     @Override
-    public void processResponseToken(final String responseToken) {
-        LOGGER.debug("Attempting to validate responseToken {}", responseToken);
+    public void processResponse(final String response) {
+        LOGGER.debug("Attempting to validate response {}", response);
 
         if(reCaptchaAttemptService.isBlocked(getClientIP())) {
-            throw new ReCaptchaInvalidException("Client blocked");
+            throw new ReCaptchaInvalidException("Client exceeded maximum number of failed attempts");
         }
 
-        if(!tokenSanityCheck(responseToken)) {
-            throw new ReCaptchaInvalidException("Token invalid");
+        if(!responseSanityCheck(response)) {
+            throw new ReCaptchaInvalidException("Response contains invalid characters");
         }
 
-        final URI verifyUri = URI.create(String.format("https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s&remoteip=%s", getReCaptchaSecret(), responseToken, getClientIP()));
+        final URI verifyUri = URI.create(String.format("https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s&remoteip=%s", getReCaptchaSecret(), response, getClientIP()));
         try {
-            final GoogleResponse response = restTemplate.getForObject(verifyUri, GoogleResponse.class);
-            LOGGER.debug("Google's response: {} ", response.toString());
+            final GoogleResponse googleResponse = restTemplate.getForObject(verifyUri, GoogleResponse.class);
+            LOGGER.debug("Google's response: {} ", googleResponse.toString());
 
-            if(!response.isSuccess()) {
-                if(response.hasClientError()) {
+            if(!googleResponse.isSuccess()) {
+                if(googleResponse.hasClientError()) {
                     reCaptchaAttemptService.reCaptchaFailed(getClientIP());
                 }
                 throw new ReCaptchaInvalidException("reCaptcha was not successfully validated");
@@ -61,8 +61,8 @@ public class CaptchaService implements ICaptchaService {
         reCaptchaAttemptService.reCaptchaSucceeded(getClientIP());
     }
 
-    private boolean tokenSanityCheck(final String responseToken) {
-        return StringUtils.hasLength(responseToken) && TOKEN_PATTERN.matcher(responseToken).matches();
+    private boolean responseSanityCheck(final String response) {
+        return StringUtils.hasLength(response) && RESPONSE_PATTERN.matcher(response).matches();
     }
 
     @Override

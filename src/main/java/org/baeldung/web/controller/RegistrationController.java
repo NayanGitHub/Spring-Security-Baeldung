@@ -70,9 +70,6 @@ public class RegistrationController {
     public GenericResponse registerUserAccount(@Valid final UserDto accountDto, final HttpServletRequest request) {
         LOGGER.debug("Registering user account with information: {}", accountDto);
 
-        final String response = request.getParameter("g-recaptcha-response");
-        captchaService.processResponseToken(response);
-
         final User registered = userService.registerNewUserAccount(accountDto);
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
         return new GenericResponse("success");

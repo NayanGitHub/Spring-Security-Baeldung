@@ -15,6 +15,7 @@
 - [The Registration API becomes RESTful](http://www.baeldung.com/registration-restful-api)
 - [Registration – Password Strength and Rules](http://www.baeldung.com/registration-password-strength-and-rules)
 - [Updating your Password](http://www.baeldung.com/updating-your-password/)
+- [Registration - Integrate reCAPTCHA](http://www.baeldung.com/spring-security-registration-captcha/)
 
 ### Build the Project
 ```
