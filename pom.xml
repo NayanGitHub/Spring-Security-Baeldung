@@ -32,6 +32,20 @@
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
         
+        <!-- 2fa -->
+        
+        <dependency>
+		    <groupId>org.jboss.aerogear</groupId>
+		    <artifactId>aerogear-otp-java</artifactId>
+		    <version>1.0.0</version>
+		    <scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity4</artifactId>
+        </dependency>
+
         <!-- Spring Security -->
 
         <dependency>

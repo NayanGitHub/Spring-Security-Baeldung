@@ -1,5 +1,7 @@
 package org.baeldung.service;
 
+import java.io.UnsupportedEncodingException;
+
 import org.baeldung.persistence.model.PasswordResetToken;
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
@@ -37,5 +39,9 @@ public interface IUserService {
     boolean checkIfValidOldPassword(User user, String password);
 
     String validateVerificationToken(String token);
+
+    String generateQRUrl(User user) throws UnsupportedEncodingException;
+
+    User updateUser2FA(boolean use2FA);
 
 }

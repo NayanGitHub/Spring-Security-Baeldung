@@ -1,16 +1,17 @@
 package org.baeldung.web.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.baeldung.captcha.ICaptchaService;
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
 import org.baeldung.registration.OnRegistrationCompleteEvent;
 import org.baeldung.security.ISecurityUserService;
-import org.baeldung.captcha.ICaptchaService;
 import org.baeldung.service.IUserService;
 import org.baeldung.web.dto.PasswordDto;
 import org.baeldung.web.dto.UserDto;
@@ -76,17 +77,22 @@ public class RegistrationController {
     }
 
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
-    public String confirmRegistration(final Locale locale, final Model model, @RequestParam("token") final String token) {
+    public String confirmRegistration(final Locale locale, final Model model, @RequestParam("token") final String token) throws UnsupportedEncodingException {
         final String result = userService.validateVerificationToken(token);
-        if (result == null) {
+        if (result.equals("valid")) {
+            final User user = userService.getUser(token);
+            System.out.println(user);
+            if (user.isUsing2FA()) {
+                model.addAttribute("qr", userService.generateQRUrl(user));
+                return "redirect:/qrcode.html?lang=" + locale.getLanguage();
+            }
             model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
             return "redirect:/login?lang=" + locale.getLanguage();
         }
-        if ("expired".equals(result)) {
-            model.addAttribute("expired", true);
-            model.addAttribute("token", token);
-        }
+
         model.addAttribute("message", messages.getMessage("auth.message." + result, null, locale));
+        model.addAttribute("expired", "expired".equals(result));
+        model.addAttribute("token", token);
         return "redirect:/badUser.html?lang=" + locale.getLanguage();
     }
 
@@ -147,7 +153,17 @@ public class RegistrationController {
         return new GenericResponse(messages.getMessage("message.updatePasswordSuc", null, locale));
     }
 
-    // NON-API
+    @RequestMapping(value = "/user/update/2fa", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse modifyUser2FA(@RequestParam("use2FA") final boolean use2FA) throws UnsupportedEncodingException {
+        final User user = userService.updateUser2FA(use2FA);
+        if (use2FA) {
+            return new GenericResponse(userService.generateQRUrl(user));
+        }
+        return null;
+    }
+
+    // ============== NON-API ============
 
     private SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
         final String confirmationUrl = contextPath + "/registrationConfirm.html?token=" + newToken.getToken();
