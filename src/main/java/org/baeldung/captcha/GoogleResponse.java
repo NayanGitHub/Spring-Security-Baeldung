@@ -9,12 +9,7 @@ import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({
-    "success",
-    "challenge_ts",
-    "hostname",
-    "error-codes"
-})
+@JsonPropertyOrder({ "success", "challenge_ts", "hostname", "error-codes" })
 public class GoogleResponse {
 
     @JsonProperty("success")
@@ -26,12 +21,8 @@ public class GoogleResponse {
     @JsonProperty("error-codes")
     private ErrorCode[] errorCodes;
 
-
     static enum ErrorCode {
-        MissingSecret,
-        InvalidSecret,
-        MissingResponse,
-        InvalidResponse;
+        MissingSecret, InvalidSecret, MissingResponse, InvalidResponse;
 
         private static Map<String, ErrorCode> errorsMap = new HashMap<String, ErrorCode>(4);
 
@@ -79,33 +70,33 @@ public class GoogleResponse {
     }
 
     @JsonProperty("error-codes")
-    public void setErrorCodes(ErrorCode[] errorCodes) { this.errorCodes = errorCodes; }
+    public void setErrorCodes(ErrorCode[] errorCodes) {
+        this.errorCodes = errorCodes;
+    }
 
     @JsonProperty("error-codes")
-    public ErrorCode[] getErrorCodes() { return errorCodes; }
+    public ErrorCode[] getErrorCodes() {
+        return errorCodes;
+    }
 
     @JsonIgnore
     public boolean hasClientError() {
         final ErrorCode[] errors = getErrorCodes();
-        if(errors == null) {
+        if (errors == null) {
             return false;
         }
-        for(final ErrorCode error : errors) {
-            switch(error) {
-                case InvalidResponse:
-                case MissingResponse:
-                    return true;
+        for (final ErrorCode error : errors) {
+            switch (error) {
+            case InvalidResponse:
+            case MissingResponse:
+                return true;
             }
         }
         return false;
     }
 
-    @Override public String toString() {
-        return "GoogleResponse{" +
-                "success=" + success +
-                ", challengeTs='" + challengeTs + '\'' +
-                ", hostname='" + hostname + '\'' +
-                ", errorCodes=" + Arrays.toString(errorCodes) +
-                '}';
+    @Override
+    public String toString() {
+        return "GoogleResponse{" + "success=" + success + ", challengeTs='" + challengeTs + '\'' + ", hostname='" + hostname + '\'' + ", errorCodes=" + Arrays.toString(errorCodes) + '}';
     }
 }

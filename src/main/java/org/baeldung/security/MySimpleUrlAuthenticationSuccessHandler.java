@@ -26,14 +26,14 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
 
     @Autowired
     ActiveUserStore activeUserStore;
-    
+
     @Override
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
         handle(request, response, authentication);
         final HttpSession session = request.getSession(false);
         if (session != null) {
             session.setMaxInactiveInterval(30 * 60);
-            LoggedUser user = new LoggedUser(authentication.getName(),activeUserStore);
+            LoggedUser user = new LoggedUser(authentication.getName(), activeUserStore);
             session.setAttribute("user", user);
         }
         clearAuthenticationAttributes(request);

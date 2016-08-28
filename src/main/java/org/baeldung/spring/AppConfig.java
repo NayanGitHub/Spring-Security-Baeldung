@@ -29,9 +29,9 @@ public class AppConfig {
     public static PropertySourcesPlaceholderConfigurer propertyPlaceHolderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
-    
+
     @Bean
-    public ActiveUserStore activeUserStore(){
+    public ActiveUserStore activeUserStore() {
         return new ActiveUserStore();
     }
 

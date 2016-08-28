@@ -36,11 +36,11 @@ public class CaptchaService implements ICaptchaService {
     public void processResponse(final String response) {
         LOGGER.debug("Attempting to validate response {}", response);
 
-        if(reCaptchaAttemptService.isBlocked(getClientIP())) {
+        if (reCaptchaAttemptService.isBlocked(getClientIP())) {
             throw new ReCaptchaInvalidException("Client exceeded maximum number of failed attempts");
         }
 
-        if(!responseSanityCheck(response)) {
+        if (!responseSanityCheck(response)) {
             throw new ReCaptchaInvalidException("Response contains invalid characters");
         }
 
@@ -49,13 +49,13 @@ public class CaptchaService implements ICaptchaService {
             final GoogleResponse googleResponse = restTemplate.getForObject(verifyUri, GoogleResponse.class);
             LOGGER.debug("Google's response: {} ", googleResponse.toString());
 
-            if(!googleResponse.isSuccess()) {
-                if(googleResponse.hasClientError()) {
+            if (!googleResponse.isSuccess()) {
+                if (googleResponse.hasClientError()) {
                     reCaptchaAttemptService.reCaptchaFailed(getClientIP());
                 }
                 throw new ReCaptchaInvalidException("reCaptcha was not successfully validated");
             }
-        } catch(RestClientException rce) {
+        } catch (RestClientException rce) {
             throw new ReCaptchaUnavailableException("Registration unavailable at this time.  Please try again later.", rce);
         }
         reCaptchaAttemptService.reCaptchaSucceeded(getClientIP());

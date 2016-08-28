@@ -11,15 +11,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggedUser implements HttpSessionBindingListener {
 
-    private String username; 
+    private String username;
     private ActiveUserStore activeUserStore;
-    
+
     public LoggedUser(String username, ActiveUserStore activeUserStore) {
         this.username = username;
-        this.activeUserStore=activeUserStore;
+        this.activeUserStore = activeUserStore;
     }
-    
-    public LoggedUser() {}
+
+    public LoggedUser() {
+    }
 
     @Override
     public void valueBound(HttpSessionBindingEvent event) {

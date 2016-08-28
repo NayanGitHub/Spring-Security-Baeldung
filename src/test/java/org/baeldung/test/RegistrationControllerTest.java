@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {Application.class, TestDbConfig.class, TestIntegrationConfig.class})
+@SpringApplicationConfiguration(classes = { Application.class, TestDbConfig.class, TestIntegrationConfig.class })
 @WebAppConfiguration
 @Transactional
 public class RegistrationControllerTest {

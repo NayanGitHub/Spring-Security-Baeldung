@@ -18,6 +18,7 @@ public class CaptchaConfig {
         factory.setReadTimeout(7 * 1000);
         return factory;
     }
+
     @Bean
     public RestOperations restTemplate() {
         RestTemplate restTemplate = new RestTemplate(this.clientHttpRequestFactory());
