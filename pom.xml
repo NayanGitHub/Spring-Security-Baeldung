@@ -262,6 +262,12 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+		  <groupId>net.logstash.logback</groupId>
+		  <artifactId>logstash-logback-encoder</artifactId>
+		  <version>4.7</version>
+		</dependency>
 
     </dependencies>
 

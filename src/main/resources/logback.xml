@@ -1,10 +1,14 @@
 <configuration>
 
+    <conversionRule conversionWord="stack" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
+    
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>web - %date [%thread] %-5level %logger{36} - %message%n
+			 <pattern>
+			     web - %date [%thread] %-5level %logger{5} - %message%n%stack{5,1}
 			</pattern>
 		</encoder>
+		
 	</appender>
 
 	<logger name="org.baeldung" level="DEBUG" />
