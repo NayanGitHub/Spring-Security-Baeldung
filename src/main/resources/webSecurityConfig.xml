@@ -36,7 +36,10 @@
             authentication-failure-handler-ref="authenticationFailureHandler"
             default-target-url="/homepage"/>
             
-        <session-management invalid-session-url="/invalidSession" session-fixation-protection="none"/>
+        <session-management invalid-session-url="/invalidSession" session-fixation-protection="none">
+        	<concurrency-control max-sessions="1" error-if-maximum-exceeded="true" 
+        	expired-url="/login" session-registry-alias="sessionRegistry"/>
+        </session-management>
         
         <logout invalidate-session="false" logout-success-url="/logoutPage?logSucc=true" delete-cookies="JSESSIONID"/>
     </http>

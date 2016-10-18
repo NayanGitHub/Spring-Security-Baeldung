@@ -2,8 +2,10 @@ package org.baeldung.service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -21,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +46,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private SessionRegistry sessionRegistry;
 
     public static final String TOKEN_INVALID = "invalidToken";
     public static final String TOKEN_EXPIRED = "expired";
@@ -197,6 +204,22 @@ public class UserService implements IUserService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<String> getUsersFromSessionRegistry() {
+        List<String> users = new ArrayList<String>();
+
+        List<Object> allUsers = sessionRegistry.getAllPrincipals();
+
+        for (final Object user : allUsers) {
+            List<SessionInformation> activeUserSessions = sessionRegistry.getAllSessions(user, false);
+
+            if (!activeUserSessions.isEmpty()) {
+                users.add(user.toString());
+            }
+        }
+        return users;
     }
 
 }
