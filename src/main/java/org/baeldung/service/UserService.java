@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -208,18 +209,10 @@ public class UserService implements IUserService {
 
     @Override
     public List<String> getUsersFromSessionRegistry() {
-        List<String> users = new ArrayList<String>();
-
         List<Object> allUsers = sessionRegistry.getAllPrincipals();
 
-        for (final Object user : allUsers) {
-            List<SessionInformation> activeUserSessions = sessionRegistry.getAllSessions(user, false);
-
-            if (!activeUserSessions.isEmpty()) {
-                users.add(user.toString());
-            }
-        }
-        return users;
+        return allUsers.stream().filter((u) -> !sessionRegistry.getAllSessions(u,false).isEmpty())
+        		.map(u -> u.toString()).collect(Collectors.toList());
     }
 
 }
