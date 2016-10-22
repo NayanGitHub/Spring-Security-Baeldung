@@ -11,6 +11,7 @@ import org.baeldung.service.IUserService;
 import org.baeldung.service.UserService;
 import org.baeldung.spring.ServiceConfig;
 import org.baeldung.spring.TestDbConfig;
+import org.baeldung.spring.TestIntegrationConfig;
 import org.baeldung.validation.EmailExistsException;
 import org.baeldung.web.dto.UserDto;
 
@@ -32,7 +33,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { TestDbConfig.class, ServiceConfig.class })
+@SpringApplicationConfiguration(classes = { TestDbConfig.class, ServiceConfig.class, TestIntegrationConfig.class })
 public class UserServiceIntegrationTest {
 
     @Autowired
