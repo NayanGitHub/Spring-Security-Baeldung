@@ -6,6 +6,7 @@ import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
 import org.baeldung.spring.ServiceConfig;
 import org.baeldung.spring.TestDbConfig;
+import org.baeldung.spring.TestIntegrationConfig;
 import org.baeldung.validation.EmailExistsException;
 import org.junit.After;
 import org.junit.Before;
@@ -25,7 +26,7 @@ import javax.persistence.PersistenceContext;
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestDbConfig.class, ServiceConfig.class }, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = { TestDbConfig.class, ServiceConfig.class, TestIntegrationConfig.class }, loader = AnnotationConfigContextLoader.class)
 @Transactional
 public class UserIntegrationTest {
 
