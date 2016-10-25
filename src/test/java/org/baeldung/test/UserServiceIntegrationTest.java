@@ -1,5 +1,16 @@
 package org.baeldung.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.UUID;
+
 import org.baeldung.persistence.dao.RoleRepository;
 import org.baeldung.persistence.dao.UserRepository;
 import org.baeldung.persistence.dao.VerificationTokenRepository;
@@ -14,23 +25,15 @@ import org.baeldung.spring.TestDbConfig;
 import org.baeldung.spring.TestIntegrationConfig;
 import org.baeldung.validation.EmailExistsException;
 import org.baeldung.web.dto.UserDto;
-
 import org.baeldung.web.error.UserAlreadyExistException;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.UUID;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { TestDbConfig.class, ServiceConfig.class, TestIntegrationConfig.class })
@@ -201,15 +204,14 @@ public class UserServiceIntegrationTest {
         userService.createVerificationTokenForUser(user, token);
         final long userId = user.getId();
         final String token_status = userService.validateVerificationToken(token);
-        assertNull(token_status);
+        assertEquals(token_status, UserService.TOKEN_VALID);
         user = userService.getUserByID(userId);
         assertTrue(user.isEnabled());
-        assertNull(userService.getVerificationToken(token));
     }
 
     @Test
     public void givenTokenValidation_whenInvalid_thenCorrect() {
-        User user = registerUser();
+        final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         final String invalid_token = "INVALID_" + UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
@@ -220,10 +222,10 @@ public class UserServiceIntegrationTest {
 
     @Test
     public void givenTokenValidation_whenExpired_thenCorrect() {
-        User user = registerUser();
+        final User user = registerUser();
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
-        final long userId = user.getId();
+        user.getId();
         final VerificationToken verificationToken = userService.getVerificationToken(token);
         verificationToken.setExpiryDate(Date.from(verificationToken.getExpiryDate().toInstant().minus(2, ChronoUnit.DAYS)));
         tokenRepository.saveAndFlush(verificationToken);

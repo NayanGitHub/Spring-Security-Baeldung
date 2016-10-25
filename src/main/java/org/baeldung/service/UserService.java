@@ -1,5 +1,15 @@
 package org.baeldung.service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
+
 import org.baeldung.persistence.dao.PasswordResetTokenRepository;
 import org.baeldung.persistence.dao.RoleRepository;
 import org.baeldung.persistence.dao.UserRepository;
@@ -16,15 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -50,7 +51,7 @@ public class UserService implements IUserService {
 
     public static final String TOKEN_INVALID = "invalidToken";
     public static final String TOKEN_EXPIRED = "expired";
-    private static final String TOKEN_VALID = "valid";
+    public static final String TOKEN_VALID = "valid";
 
     public static String QR_PREFIX = "https://chart.googleapis.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=";
     public static String APP_NAME = "SpringRegistration";
@@ -202,10 +203,7 @@ public class UserService implements IUserService {
 
     @Override
     public List<String> getUsersFromSessionRegistry() {
-        return sessionRegistry.getAllPrincipals().stream()
-          .filter((u) -> !sessionRegistry.getAllSessions(u, false).isEmpty())
-          .map(Object::toString)
-          .collect(Collectors.toList());
+        return sessionRegistry.getAllPrincipals().stream().filter((u) -> !sessionRegistry.getAllSessions(u, false).isEmpty()).map(Object::toString).collect(Collectors.toList());
     }
 
 }
