@@ -16,7 +16,7 @@ public class TestIntegrationConfig {
 
         return new RequestContextListener();
     }
-    
+
     @Bean
     public SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();

@@ -106,7 +106,7 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder(11);
     }
-    
+
     @Bean
     public SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();

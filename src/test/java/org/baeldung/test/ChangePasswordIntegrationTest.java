@@ -31,8 +31,7 @@ import com.jayway.restassured.response.Response;
 import com.jayway.restassured.specification.RequestSpecification;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { Application.class, TestDbConfig.class,
-        TestIntegrationConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = { Application.class, TestDbConfig.class, TestIntegrationConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ChangePasswordIntegrationTest {
 
     @Autowired

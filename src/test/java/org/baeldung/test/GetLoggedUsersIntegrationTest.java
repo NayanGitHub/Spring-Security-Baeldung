@@ -27,8 +27,7 @@ import com.jayway.restassured.response.Response;
 import com.jayway.restassured.specification.RequestSpecification;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { Application.class, TestDbConfig.class,
-        TestIntegrationConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = { Application.class, TestDbConfig.class, TestIntegrationConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class GetLoggedUsersIntegrationTest {
 
     @Autowired
@@ -68,7 +67,6 @@ public class GetLoggedUsersIntegrationTest {
         SESSION_REGISTRY_LOGGED_USERS_URL = URL_PREFIX + "/loggedUsersFromSessionRegistry";
         formConfig = new FormAuthConfig(URL_PREFIX + "/login", "username", "password");
     }
-    
 
     @Test
     public void givenLoggedInUser_whenGettingLoggedUsersFromActiveUserStore_thenResponseContainsUser() {
@@ -82,7 +80,7 @@ public class GetLoggedUsersIntegrationTest {
         assertEquals(200, response.statusCode());
         assertTrue(response.body().asString().contains("test@test.com"));
     }
-    
+
     @Test
     public void givenLoggedInUser_whenGettingLoggedUsersFromSessionRegistry_thenResponseContainsUser() {
         final RequestSpecification request = RestAssured.given().auth().form("test@test.com", "test", formConfig);
@@ -96,5 +94,4 @@ public class GetLoggedUsersIntegrationTest {
         assertTrue(response.body().asString().contains("test@test.com"));
     }
 
-    
 }
