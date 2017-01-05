@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.1.RELEASE</version>
+        <version>1.4.3.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -353,8 +353,6 @@
         <hibernate.version>4.3.11.Final</hibernate.version>
         <hibernate-validator.version>5.2.2.Final</hibernate-validator.version>
         <mysql-connector-java.version>5.1.37</mysql-connector-java.version>
-        <spring-data-jpa.version>1.9.2.RELEASE</spring-data-jpa.version>
-        
         
         <!-- logging -->
         <org.slf4j.version>1.7.13</org.slf4j.version>
@@ -369,7 +367,6 @@
         <javax.inject.version>1</javax.inject.version>
 
         <!-- Spring Data Jpa -->
-        <spring-data-jpa.version>1.8.2.RELEASE</spring-data-jpa.version>
 
         <!-- guava -->
         <guava.version>19.0</guava.version>
