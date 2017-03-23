@@ -1,6 +1,3 @@
-*.class
-.springBeans
-
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
@@ -13,3 +10,16 @@
 hs_err_pid*
 
 target/
+
+# Eclipse
+.settings/
+*.project
+*.classpath
+.prefs
+*.prefs
+.metadata/
+
+# Intellij
+.idea/
+*.iml
+*.iws
