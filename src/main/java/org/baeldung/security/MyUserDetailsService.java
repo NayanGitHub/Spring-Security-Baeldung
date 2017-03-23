@@ -59,7 +59,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
     // UTIL
 
-    public final Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
+    private final Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
         return getGrantedAuthorities(getPrivileges(roles));
     }
 
@@ -72,6 +72,7 @@ public class MyUserDetailsService implements UserDetailsService {
         for (final Privilege item : collection) {
             privileges.add(item.getName());
         }
+        
         return privileges;
     }
 
@@ -83,11 +84,12 @@ public class MyUserDetailsService implements UserDetailsService {
         return authorities;
     }
 
-    private String getClientIP() {
+    private final String getClientIP() {
         final String xfHeader = request.getHeader("X-Forwarded-For");
         if (xfHeader == null) {
             return request.getRemoteAddr();
         }
         return xfHeader.split(",")[0];
     }
+
 }
