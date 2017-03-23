@@ -18,6 +18,7 @@ target/
 .prefs
 *.prefs
 .metadata/
+.factorypath
 
 # Intellij
 .idea/
