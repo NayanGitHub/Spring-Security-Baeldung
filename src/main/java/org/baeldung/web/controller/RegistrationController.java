@@ -15,7 +15,6 @@ import org.baeldung.service.IUserService;
 import org.baeldung.web.dto.PasswordDto;
 import org.baeldung.web.dto.UserDto;
 import org.baeldung.web.error.InvalidOldPasswordException;
-import org.baeldung.web.error.UserNotFoundException;
 import org.baeldung.web.util.GenericResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,13 +106,12 @@ public class RegistrationController {
     @ResponseBody
     public GenericResponse resetPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
         final User user = userService.findUserByEmail(userEmail);
-        if (user == null) {
-            throw new UserNotFoundException();
+        if (user != null) {
+            final String token = UUID.randomUUID()
+                .toString();
+            userService.createPasswordResetTokenForUser(user, token);
+            mailSender.send(constructResetTokenEmail(getAppUrl(request), request.getLocale(), token, user));
         }
-        final String token = UUID.randomUUID()
-            .toString();
-        userService.createPasswordResetTokenForUser(user, token);
-        mailSender.send(constructResetTokenEmail(getAppUrl(request), request.getLocale(), token, user));
         return new GenericResponse(messages.getMessage("message.resetPasswordEmail", null, request.getLocale()));
     }
 
