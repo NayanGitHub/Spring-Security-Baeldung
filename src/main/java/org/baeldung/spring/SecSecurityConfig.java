@@ -1,7 +1,11 @@
 package org.baeldung.spring;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.baeldung.security.google2fa.CustomAuthenticationProvider;
 import org.baeldung.security.google2fa.CustomWebAuthenticationDetailsSource;
+import org.baeldung.security.location.DifferentLocationChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,6 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 
 @Configuration
 @ComponentScan(basePackages = { "org.baeldung.security" })
@@ -41,6 +48,9 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private CustomWebAuthenticationDetailsSource authenticationDetailsSource;
+
+    @Autowired
+    private DifferentLocationChecker differentLocationChecker;
 
     public SecSecurityConfig() {
         super();
@@ -66,7 +76,7 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login*","/login*", "/logout*", "/signin/**", "/signup/**",
                         "/user/registration*", "/registrationConfirm*", "/expiredAccount*", "/registration*",
                         "/badUser*", "/user/resendRegistrationToken*" ,"/forgetPassword*", "/user/resetPassword*",
-                        "/user/changePassword*", "/emailError*", "/resources/**","/old/user/registration*","/successRegister*","/qrcode*").permitAll()
+                        "/user/changePassword*", "/emailError*", "/resources/**","/old/user/registration*","/successRegister*","/qrcode*","/user/enableNewLoc*").permitAll()
                 .antMatchers("/invalidSession*").anonymous()
                 .antMatchers("/user/updatePassword*","/user/savePassword*","/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
                 .anyRequest().hasAuthority("READ_PRIVILEGE")
@@ -101,6 +111,7 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
         final CustomAuthenticationProvider authProvider = new CustomAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(encoder());
+        authProvider.setPostAuthenticationChecks(differentLocationChecker);
         return authProvider;
     }
 
@@ -112,6 +123,12 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public DatabaseReader databaseReader() throws IOException, GeoIp2Exception {
+        final File resource = new File("src/main/resources/GeoLite2-Country.mmdb");
+        return new DatabaseReader.Builder(resource).build();
     }
 
 }

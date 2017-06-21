@@ -99,6 +99,13 @@
 			<version>${guava.version}</version>
 		</dependency>
 
+        <!-- location -->
+        <dependency>
+            <groupId>com.maxmind.geoip2</groupId>
+            <artifactId>geoip2</artifactId>
+            <version>${geoip2.version}</version>
+        </dependency>
+        
 		<!-- test -->
 
 		<dependency>
@@ -123,7 +130,6 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -142,12 +148,6 @@
 
 	<build>
 		<finalName>spring-security-login-and-registration</finalName>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
 
 		<plugins>
 
@@ -162,7 +162,7 @@
 
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<artifactId>spring-boot-maven-plugin</artifactId>            
 			</plugin>
 
 			<plugin>
@@ -228,6 +228,8 @@
 
 		<passay.version>1.0</passay.version>
 		<rest-assured.version>2.4.0</rest-assured.version>
+        
+        <geoip2.version>2.9.0</geoip2.version>
 
 	</properties>
 
