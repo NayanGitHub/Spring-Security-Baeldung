@@ -66,7 +66,6 @@ public class RegistrationController {
         LOGGER.debug("Registering user account with information: {}", accountDto);
 
         final User registered = userService.registerNewUserAccount(accountDto);
-        userService.addUserLocation(registered, getClientIP(request));
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
         return new GenericResponse("success");
     }
@@ -160,17 +159,6 @@ public class RegistrationController {
         return null;
     }
 
-    @RequestMapping(value = "/user/enableNewLoc", method = RequestMethod.GET)
-    public String enableNewLoc(Locale locale, Model model, @RequestParam("token") String token) {
-        final String loc = userService.isValidNewLocationToken(token);
-        if (loc != null) {
-            model.addAttribute("message", messages.getMessage("message.newLoc.enabled", new Object[] { loc }, locale));
-        } else {
-            model.addAttribute("message", messages.getMessage("message.error", null, locale));
-        }
-        return "redirect:/login?lang=" + locale.getLanguage();
-    }
-
     // ============== NON-API ============
 
     private SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
@@ -198,12 +186,4 @@ public class RegistrationController {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
 
-    private final String getClientIP(HttpServletRequest request) {
-        final String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null) {
-            return request.getRemoteAddr();
-        }
-        return xfHeader.split(",")[0];
-        // return "128.101.101.101";
-    }
 }

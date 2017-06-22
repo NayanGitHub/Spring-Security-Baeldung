@@ -3,7 +3,6 @@ package org.baeldung.service;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import org.baeldung.persistence.model.NewLocationToken;
 import org.baeldung.persistence.model.PasswordResetToken;
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
@@ -48,9 +47,4 @@ public interface IUserService {
 
     List<String> getUsersFromSessionRegistry();
 
-    NewLocationToken isNewLoginLocation(String username, String ip);
-
-    String isValidNewLocationToken(String token);
-
-    void addUserLocation(User user, String ip);
 }
