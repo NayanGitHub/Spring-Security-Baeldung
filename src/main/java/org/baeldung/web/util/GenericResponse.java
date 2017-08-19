@@ -27,21 +27,6 @@ public class GenericResponse {
             .collect(Collectors.joining(","));
     }
 
-    // public GenericResponse(final List<FieldError> fieldErrors, final List<ObjectError> globalErrors) {
-    // super();
-    // final ObjectMapper mapper = new ObjectMapper();
-    // try {
-    // System.out.println("9999" + fieldErrors.get(0)
-    // .getDefaultMessage());
-    //
-    // this.message = mapper.writeValueAsString(fieldErrors);
-    // this.error = mapper.writeValueAsString(globalErrors);
-    // } catch (final JsonProcessingException e) {
-    // this.message = "";
-    // this.error = "";
-    // }
-    // }
-
     public String getMessage() {
         return message;
     }
