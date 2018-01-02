@@ -1,5 +1,6 @@
 package org.baeldung.spring;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -49,19 +50,21 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         final Privilege passwordPrivilege = createPrivilegeIfNotFound("CHANGE_PASSWORD_PRIVILEGE");
 
         // == create initial roles
-        final List<Privilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege, passwordPrivilege);
-        final List<Privilege> userPrivileges = Arrays.asList(readPrivilege, passwordPrivilege);
-        createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
+        final List<Privilege> adminPrivileges = new ArrayList<Privilege>(Arrays.asList(readPrivilege, writePrivilege, passwordPrivilege));
+        final List<Privilege> userPrivileges = new ArrayList<Privilege>(Arrays.asList(readPrivilege, passwordPrivilege));
+        final Role adminRole = createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
         createRoleIfNotFound("ROLE_USER", userPrivileges);
 
-        final Role adminRole = roleRepository.findByName("ROLE_ADMIN");
-        final User user = new User();
-        user.setFirstName("Test");
-        user.setLastName("Test");
-        user.setPassword(passwordEncoder.encode("test"));
-        user.setEmail("test@test.com");
-        user.setRoles(Arrays.asList(adminRole));
-        user.setEnabled(true);
+        User user = userRepository.findByEmail("test@test.com");
+        if (user == null) {
+            user = new User();
+            user.setFirstName("Test");
+            user.setLastName("Test");
+            user.setPassword(passwordEncoder.encode("test"));
+            user.setEmail("test@test.com");
+            user.setEnabled(true);
+        }
+        user.setRoles(new ArrayList<Role>(Arrays.asList(adminRole)));
         userRepository.save(user);
 
         alreadySetup = true;
@@ -72,7 +75,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         Privilege privilege = privilegeRepository.findByName(name);
         if (privilege == null) {
             privilege = new Privilege(name);
-            privilegeRepository.save(privilege);
+            privilege = privilegeRepository.save(privilege);
         }
         return privilege;
     }
@@ -82,9 +85,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         Role role = roleRepository.findByName(name);
         if (role == null) {
             role = new Role(name);
-            role.setPrivileges(privileges);
-            roleRepository.save(role);
         }
+        role.setPrivileges(privileges);
+        role = roleRepository.save(role);
         return role;
     }
 
