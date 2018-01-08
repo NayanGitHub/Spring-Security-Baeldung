@@ -4,10 +4,14 @@ import java.util.Locale;
 
 import org.baeldung.validation.EmailValidator;
 import org.baeldung.validation.PasswordMatchesValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -27,8 +31,9 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public MvcConfig() {
         super();
     }
-
-    //
+    
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
@@ -105,6 +110,13 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @ConditionalOnMissingBean(RequestContextListener.class)
     public RequestContextListener requestContextListener() {
         return new RequestContextListener();
+    }
+    
+    @Override
+    public Validator getValidator() {
+        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator.setValidationMessageSource(messageSource);
+        return validator;
     }
 
 }
