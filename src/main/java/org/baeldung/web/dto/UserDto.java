@@ -92,21 +92,8 @@ public class UserDto {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("UserDto [firstName=")
-            .append(firstName)
-            .append(", lastName=")
-            .append(lastName)
-            .append(", password=")
-            .append(password)
-            .append(", matchingPassword=")
-            .append(matchingPassword)
-            .append(", email=")
-            .append(email)
-            .append(", isUsing2FA=")
-            .append(isUsing2FA)
-            .append(", role=")
-            .append(role)
-            .append("]");
+        builder.append("UserDto [firstName=").append(firstName).append(", lastName=").append(lastName).append(", password=").append(password).append(", matchingPassword=").append(matchingPassword).append(", email=").append(email).append(", isUsing2FA=")
+                .append(isUsing2FA).append(", role=").append(role).append("]");
         return builder.toString();
     }
 

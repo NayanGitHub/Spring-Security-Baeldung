@@ -38,8 +38,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         super.addViewControllers(registry);
-        registry.addViewController("/")
-            .setViewName("forward:/login");
+        registry.addViewController("/").setViewName("forward:/login");
         registry.addViewController("/login");
         registry.addViewController("/customLogin");
         registry.addViewController("/registration.html");
@@ -68,8 +67,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/**")
-            .addResourceLocations("/", "/resources/");
+        registry.addResourceHandler("/resources/**").addResourceLocations("/", "/resources/");
     }
 
     @Override
