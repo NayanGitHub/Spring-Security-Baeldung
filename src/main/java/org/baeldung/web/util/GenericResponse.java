@@ -3,6 +3,7 @@ package org.baeldung.web.util;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 public class GenericResponse {
@@ -22,9 +23,16 @@ public class GenericResponse {
 
     public GenericResponse(List<ObjectError> allErrors, String error) {
         this.error = error;
-        this.message = allErrors.stream()
-            .map(e -> e.getDefaultMessage())
+        String temp = allErrors.stream()
+            .map(e -> {
+                if (e instanceof FieldError) {
+                    return "{\"field\":\"" + ((FieldError) e).getField() + "\",\"defaultMessage\":\"" + e.getDefaultMessage() + "\"}";
+                } else {
+                    return "{\"object\":\"" + e.getObjectName() + "\",\"defaultMessage\":\"" + e.getDefaultMessage() + "\"}";
+                }
+            })
             .collect(Collectors.joining(","));
+        this.message = "[" + temp + "]";
     }
 
     public String getMessage() {

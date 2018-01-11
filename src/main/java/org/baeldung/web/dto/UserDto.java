@@ -10,11 +10,11 @@ import org.baeldung.validation.ValidPassword;
 @PasswordMatches
 public class UserDto {
     @NotNull
-    @Size(min = 1)
+    @Size(min = 1, message = "{Size.userDto.firstName}")
     private String firstName;
 
     @NotNull
-    @Size(min = 1)
+    @Size(min = 1, message = "{Size.userDto.lastName}")
     private String lastName;
 
     @ValidPassword
@@ -26,7 +26,7 @@ public class UserDto {
 
     @ValidEmail
     @NotNull
-    @Size(min = 1)
+    @Size(min = 1, message = "{Size.userDto.email}")
     private String email;
 
     private boolean isUsing2FA;

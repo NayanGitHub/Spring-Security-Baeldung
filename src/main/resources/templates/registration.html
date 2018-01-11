@@ -17,7 +17,7 @@ color:#000;
         <div >
             <h1 th:text="#{label.form.title}">form</h1>
             <br/>
-            <form action="/" method="POST" enctype="utf8">
+            <form action="/" method="POST" enctype="utf8" >
                 <div class="form-group row" >
                     <label class="col-sm-3" th:text="#{label.user.firstName}">first</label>
                     <span class="col-sm-5"><input class="form-control" name="firstName" value="" required="required"/></span>
@@ -123,11 +123,13 @@ function register(event){
         else{
         	var errors = $.parseJSON(data.responseJSON.message);
             $.each( errors, function( index,item ){
-                $("#"+item.field+"Error").show().html(item.defaultMessage);
-            });
-            errors = $.parseJSON(data.responseJSON.error);
-            $.each( errors, function( index,item ){
-                $("#globalError").show().append(item.defaultMessage+"<br/>");
+            	if (item.field){
+            		$("#"+item.field+"Error").show().append(item.defaultMessage+"<br/>");
+            	}
+            	else {
+            		$("#globalError").show().append(item.defaultMessage+"<br/>");
+            	}
+               
             });
         }
     });
