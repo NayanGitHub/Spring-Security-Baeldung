@@ -20,6 +20,7 @@ import org.jboss.aerogear.security.otp.api.Base32;
 public class User {
 
     @Id
+    @Column(unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
