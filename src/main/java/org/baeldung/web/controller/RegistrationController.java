@@ -1,12 +1,16 @@
 package org.baeldung.web.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.baeldung.persistence.model.Privilege;
 import org.baeldung.persistence.model.User;
 import org.baeldung.persistence.model.VerificationToken;
 import org.baeldung.registration.OnRegistrationCompleteEvent;
@@ -24,13 +28,21 @@ import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 
 @Controller
 public class RegistrationController {
@@ -54,6 +66,10 @@ public class RegistrationController {
     @Autowired
     private Environment env;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+
     public RegistrationController() {
         super();
     }
@@ -71,17 +87,18 @@ public class RegistrationController {
     }
 
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
-    public String confirmRegistration(final Locale locale, final Model model, @RequestParam("token") final String token) throws UnsupportedEncodingException {
+    public String confirmRegistration(final HttpServletRequest request, final Model model, @RequestParam("token") final String token) throws UnsupportedEncodingException {
+        Locale locale = request.getLocale();
         final String result = userService.validateVerificationToken(token);
         if (result.equals("valid")) {
             final User user = userService.getUser(token);
-            System.out.println(user);
-            if (user.isUsing2FA()) {
-                model.addAttribute("qr", userService.generateQRUrl(user));
-                return "redirect:/qrcode.html?lang=" + locale.getLanguage();
-            }
+            // if (user.isUsing2FA()) {
+            // model.addAttribute("qr", userService.generateQRUrl(user));
+            // return "redirect:/qrcode.html?lang=" + locale.getLanguage();
+            // }
+            authWithoutPassword(user);
             model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
-            return "redirect:/login?lang=" + locale.getLanguage();
+            return "redirect:/console.html?lang=" + locale.getLanguage();
         }
 
         model.addAttribute("message", messages.getMessage("auth.message." + result, null, locale));
@@ -186,4 +203,39 @@ public class RegistrationController {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
 
+    public void authWithHttpServletRequest(HttpServletRequest request, String username, String password) {
+        try {
+            request.login(username, password);
+        } catch (ServletException e) {
+            LOGGER.error("Error while login ", e);
+        }
+    }
+
+    public void authWithAuthManager(HttpServletRequest request, String username, String password) {
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
+        authToken.setDetails(new WebAuthenticationDetails(request));
+        request.getSession();
+        Authentication authentication = authenticationManager.authenticate(authToken);
+        SecurityContextHolder.getContext()
+            .setAuthentication(authentication);
+        request.getSession()
+            .setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+    }
+
+    public void authWithoutPassword(User user){
+        List<Privilege> privileges = user.getRoles()
+            .stream()
+            .map(role -> role.getPrivileges())
+            .flatMap(list -> list.stream())
+            .distinct()
+            .collect(Collectors.toList());
+        List<GrantedAuthority> authorities = privileges.stream()
+            .map(p -> new SimpleGrantedAuthority(p.getName()))
+            .collect(Collectors.toList());
+
+        Authentication authentication = 
+            new UsernamePasswordAuthenticationToken(user, null,authorities);
+
+          SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
 }
