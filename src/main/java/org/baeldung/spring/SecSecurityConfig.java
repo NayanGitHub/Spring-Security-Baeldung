@@ -1,5 +1,7 @@
 package org.baeldung.spring;
 
+import org.baeldung.persistence.dao.UserRepository;
+import org.baeldung.security.CustomRememberMeServices;
 import org.baeldung.security.google2fa.CustomAuthenticationProvider;
 import org.baeldung.security.google2fa.CustomWebAuthenticationDetailsSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 
 @Configuration
 @ComponentScan(basePackages = { "org.baeldung.security" })
@@ -41,6 +45,9 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private CustomWebAuthenticationDetailsSource authenticationDetailsSource;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public SecSecurityConfig() {
         super();
@@ -90,7 +97,9 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(false)
                 .logoutSuccessUrl("/logout.html?logSucc=true")
                 .deleteCookies("JSESSIONID")
-                .permitAll();
+                .permitAll()
+             .and()
+                .rememberMe().rememberMeServices(rememberMeServices()).key("theKey");
     // @formatter:on
     }
 
@@ -114,4 +123,9 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
         return new SessionRegistryImpl();
     }
 
+    @Bean
+    public RememberMeServices rememberMeServices() {
+        CustomRememberMeServices rememberMeServices = new CustomRememberMeServices("theKey", userDetailsService, new InMemoryTokenRepositoryImpl());
+        return rememberMeServices;
+    }
 }
