@@ -72,7 +72,7 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
             throw new IllegalStateException();
         }
     }
-    
+
     protected void clearAuthenticationAttributes(final HttpServletRequest request) {
         final HttpSession session = request.getSession(false);
         if (session == null) {

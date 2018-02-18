@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 public class CustomRememberMeServices extends PersistentTokenBasedRememberMeServices {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -35,7 +36,6 @@ public class CustomRememberMeServices extends PersistentTokenBasedRememberMeServ
         this.tokenRepository = tokenRepository;
         this.key = key;
     }
-
 
     @Override
     protected void onLoginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication successfulAuthentication) {

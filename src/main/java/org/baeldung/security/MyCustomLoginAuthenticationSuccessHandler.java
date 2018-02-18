@@ -28,7 +28,7 @@ public class MyCustomLoginAuthenticationSuccessHandler implements Authentication
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
         addWelcomeCookie(gerUserName(authentication), response);
         redirectStrategy.sendRedirect(request, response, "/homepage.html?user=" + authentication.getName());
-        
+
         final HttpSession session = request.getSession(false);
         if (session != null) {
             session.setMaxInactiveInterval(30 * 60);
@@ -39,7 +39,7 @@ public class MyCustomLoginAuthenticationSuccessHandler implements Authentication
     }
 
     private String gerUserName(final Authentication authentication) {
-        return ((User)authentication.getPrincipal()).getFirstName();
+        return ((User) authentication.getPrincipal()).getFirstName();
     }
 
     private void addWelcomeCookie(final String user, final HttpServletResponse response) {

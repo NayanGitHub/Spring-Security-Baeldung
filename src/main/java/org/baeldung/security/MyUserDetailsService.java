@@ -72,7 +72,7 @@ public class MyUserDetailsService implements UserDetailsService {
         for (final Privilege item : collection) {
             privileges.add(item.getName());
         }
-        
+
         return privileges;
     }
 

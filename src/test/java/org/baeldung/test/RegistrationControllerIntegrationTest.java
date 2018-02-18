@@ -55,23 +55,18 @@ public class RegistrationControllerIntegrationTest {
 
     @Before
     public void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-            .build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
         User user = new User();
-        user.setEmail(UUID.randomUUID()
-            .toString() + "@example.com");
-        user.setPassword(UUID.randomUUID()
-            .toString());
+        user.setEmail(UUID.randomUUID().toString() + "@example.com");
+        user.setPassword(UUID.randomUUID().toString());
         user.setFirstName("First");
         user.setLastName("Last");
 
         entityManager.persist(user);
-        token = UUID.randomUUID()
-            .toString();
+        token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken(token, user);
-        verificationToken.setExpiryDate(Date.from(Instant.now()
-            .plus(2, ChronoUnit.DAYS)));
+        verificationToken.setExpiryDate(Date.from(Instant.now().plus(2, ChronoUnit.DAYS)));
 
         entityManager.persist(verificationToken);
 
@@ -102,8 +97,7 @@ public class RegistrationControllerIntegrationTest {
 
         ResultActions resultActions = this.mockMvc.perform(post("/user/registration").params(param));
         resultActions.andExpect(status().is(400));
-        resultActions.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.error", is("InvaliduserDto")))
-            .andExpect(jsonPath("$.message", containsString("{\"field\":\"lastName\",\"defaultMessage\":\"Length must be greater than 1\"}")));
+        resultActions.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)).andExpect(jsonPath("$.error", is("InvaliduserDto")))
+                .andExpect(jsonPath("$.message", containsString("{\"field\":\"lastName\",\"defaultMessage\":\"Length must be greater than 1\"}")));
     }
 }

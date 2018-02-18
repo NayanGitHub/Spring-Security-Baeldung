@@ -45,18 +45,14 @@ public class RegistrationPasswordLiveTest {
 
     private int getResponseForPassword(String pass) {
         final Map<String, String> param = new HashMap<String, String>();
-        final String randomName = UUID.randomUUID()
-            .toString();
+        final String randomName = UUID.randomUUID().toString();
         param.put("firstName", randomName);
         param.put("lastName", "Doe");
         param.put("email", randomName + "@x.com");
         param.put("password", pass);
         param.put("matchingPassword", pass);
 
-        final Response response = RestAssured.given()
-            .formParameters(param)
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .post(BASE_URI + "user/registration");
+        final Response response = RestAssured.given().formParameters(param).accept(MediaType.APPLICATION_JSON_VALUE).post(BASE_URI + "user/registration");
         System.out.println(response.asString());
         return response.getStatusCode();
     }

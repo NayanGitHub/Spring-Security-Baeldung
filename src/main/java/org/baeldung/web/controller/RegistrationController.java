@@ -42,7 +42,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 @Controller
 public class RegistrationController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -67,7 +66,6 @@ public class RegistrationController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
-
 
     public RegistrationController() {
         super();
@@ -123,8 +121,7 @@ public class RegistrationController {
     public GenericResponse resetPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
         final User user = userService.findUserByEmail(userEmail);
         if (user != null) {
-            final String token = UUID.randomUUID()
-                .toString();
+            final String token = UUID.randomUUID().toString();
             userService.createPasswordResetTokenForUser(user, token);
             mailSender.send(constructResetTokenEmail(getAppUrl(request), request.getLocale(), token, user));
         }
@@ -144,9 +141,7 @@ public class RegistrationController {
     @RequestMapping(value = "/user/savePassword", method = RequestMethod.POST)
     @ResponseBody
     public GenericResponse savePassword(final Locale locale, @Valid PasswordDto passwordDto) {
-        final User user = (User) SecurityContextHolder.getContext()
-            .getAuthentication()
-            .getPrincipal();
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userService.changeUserPassword(user, passwordDto.getNewPassword());
         return new GenericResponse(messages.getMessage("message.resetPasswordSuc", null, locale));
     }
@@ -155,9 +150,7 @@ public class RegistrationController {
     @RequestMapping(value = "/user/updatePassword", method = RequestMethod.POST)
     @ResponseBody
     public GenericResponse changeUserPassword(final Locale locale, @Valid PasswordDto passwordDto) {
-        final User user = userService.findUserByEmail(((User) SecurityContextHolder.getContext()
-            .getAuthentication()
-            .getPrincipal()).getEmail());
+        final User user = userService.findUserByEmail(((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmail());
         if (!userService.checkIfValidOldPassword(user, passwordDto.getOldPassword())) {
             throw new InvalidOldPasswordException();
         }
@@ -214,25 +207,16 @@ public class RegistrationController {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
         authToken.setDetails(new WebAuthenticationDetails(request));
         Authentication authentication = authenticationManager.authenticate(authToken);
-        SecurityContextHolder.getContext()
-            .setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         // request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
     }
 
-    public void authWithoutPassword(User user){
-        List<Privilege> privileges = user.getRoles()
-            .stream()
-            .map(role -> role.getPrivileges())
-            .flatMap(list -> list.stream())
-            .distinct()
-            .collect(Collectors.toList());
-        List<GrantedAuthority> authorities = privileges.stream()
-            .map(p -> new SimpleGrantedAuthority(p.getName()))
-            .collect(Collectors.toList());
+    public void authWithoutPassword(User user) {
+        List<Privilege> privileges = user.getRoles().stream().map(role -> role.getPrivileges()).flatMap(list -> list.stream()).distinct().collect(Collectors.toList());
+        List<GrantedAuthority> authorities = privileges.stream().map(p -> new SimpleGrantedAuthority(p.getName())).collect(Collectors.toList());
 
-        Authentication authentication = 
-            new UsernamePasswordAuthenticationToken(user, null,authorities);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
 
-          SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
