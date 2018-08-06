@@ -2,6 +2,7 @@ package org.baeldung.service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Optional;
 
 import org.baeldung.persistence.model.PasswordResetToken;
 import org.baeldung.persistence.model.User;
@@ -33,7 +34,7 @@ public interface IUserService {
 
     User getUserByPasswordResetToken(String token);
 
-    User getUserByID(long id);
+    Optional<User> getUserByID(long id);
 
     void changeUserPassword(User user, String password);
 

@@ -1,5 +1,12 @@
 package org.baeldung.test;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.UUID;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.baeldung.persistence.dao.UserRepository;
 import org.baeldung.persistence.dao.VerificationTokenRepository;
 import org.baeldung.persistence.model.User;
@@ -13,16 +20,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import java.util.UUID;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { TestDbConfig.class, ServiceConfig.class, TestIntegrationConfig.class })
@@ -73,21 +74,21 @@ public class UserIntegrationTest {
 
     @Test
     public void whenContextLoad_thenCorrect() {
-        assertEquals(1, userRepository.count());
-        assertEquals(1, tokenRepository.count());
+        assertTrue(userRepository.count() > 0);
+        assertTrue(tokenRepository.count() > 0);
     }
 
     // @Test(expected = Exception.class)
     @Test
     @Ignore("needs to go through the service and get transactional semantics")
     public void whenRemovingUser_thenFkViolationException() {
-        userRepository.delete(userId);
+        userRepository.deleteById(userId);
     }
 
     @Test
     public void whenRemovingTokenThenUser_thenCorrect() {
-        tokenRepository.delete(tokenId);
-        userRepository.delete(userId);
+        tokenRepository.deleteById(tokenId);
+        userRepository.deleteById(userId);
     }
 
 }

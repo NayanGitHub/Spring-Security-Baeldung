@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -146,8 +147,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User getUserByID(final long id) {
-        return repository.findOne(id);
+    public Optional<User> getUserByID(final long id) {
+        return repository.findById(id);
     }
 
     @Override

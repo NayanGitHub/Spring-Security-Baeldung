@@ -1,5 +1,19 @@
 package org.baeldung.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.baeldung.persistence.dao.UserRepository;
 import org.baeldung.persistence.dao.VerificationTokenRepository;
 import org.baeldung.persistence.model.User;
@@ -15,16 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-
-import java.util.Date;
-import java.util.UUID;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { TestDbConfig.class, TestTaskConfig.class })
@@ -82,12 +86,11 @@ public class TokenExpirationIntegrationTest {
     public void whenContextLoad_thenCorrect() {
         assertNotNull(user_id);
         assertNotNull(token_id);
-        assertNotNull(userRepository.findOne(user_id));
+        assertTrue(userRepository.findById(user_id).isPresent());
 
-        VerificationToken verificationToken = tokenRepository.findOne(token_id);
-        assertNotNull(verificationToken);
-
-        assertTrue(tokenRepository.findAllByExpiryDateLessThan(Date.from(Instant.now())).anyMatch((token) -> token.equals(verificationToken)));
+        Optional<VerificationToken> verificationToken = tokenRepository.findById(token_id);
+        assertTrue(verificationToken.isPresent());
+        assertTrue(tokenRepository.findAllByExpiryDateLessThan(Date.from(Instant.now())).anyMatch((token) -> token.equals(verificationToken.get())));
     }
 
     @After
@@ -110,6 +113,6 @@ public class TokenExpirationIntegrationTest {
     @Test
     public void whenPurgeTokenTask_thenCorrect() {
         tokensPurgeTask.purgeExpired();
-        assertNull(tokenRepository.findOne(token_id));
+        assertFalse(tokenRepository.findById(token_id).isPresent());
     }
 }

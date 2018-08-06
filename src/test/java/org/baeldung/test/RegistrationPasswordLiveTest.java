@@ -1,6 +1,8 @@
 package org.baeldung.test;
 
 import static org.junit.Assert.assertEquals;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,9 +11,6 @@ import java.util.UUID;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.response.Response;
 
 public class RegistrationPasswordLiveTest {
     private final String BASE_URI = "http://localhost:8081/";
@@ -52,7 +51,7 @@ public class RegistrationPasswordLiveTest {
         param.put("password", pass);
         param.put("matchingPassword", pass);
 
-        final Response response = RestAssured.given().formParameters(param).accept(MediaType.APPLICATION_JSON_VALUE).post(BASE_URI + "user/registration");
+        final Response response = RestAssured.given().formParams(param).accept(MediaType.APPLICATION_JSON_VALUE).post(BASE_URI + "user/registration");
         System.out.println(response.asString());
         return response.getStatusCode();
     }

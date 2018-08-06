@@ -5,6 +5,10 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import io.restassured.RestAssured;
+import io.restassured.authentication.FormAuthConfig;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,10 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.authentication.FormAuthConfig;
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.specification.RequestSpecification;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { Application.class, TestDbConfig.class, TestIntegrationConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -65,10 +66,9 @@ public class ChangePasswordIntegrationTest {
         }
 
         RestAssured.port = port;
-
-        final String URL_PREFIX = "http://localhost:" + String.valueOf(port);
-        URL = URL_PREFIX + "/user/updatePassword";
-        formConfig = new FormAuthConfig(URL_PREFIX + "/login", "username", "password");
+        RestAssured.baseURI = "http://localhost";
+        URL = "/user/updatePassword";
+        formConfig = new FormAuthConfig("/login", "username", "password");
     }
 
     @Test
@@ -93,7 +93,7 @@ public class ChangePasswordIntegrationTest {
         params.put("oldPassword", "test");
         params.put("newPassword", "newTest&12");
 
-        final Response response = request.with().queryParameters(params).post(URL);
+        final Response response = request.with().queryParams(params).post(URL);
 
         assertEquals(200, response.statusCode());
         assertTrue(response.body().asString().contains("Password updated successfully"));
@@ -107,7 +107,7 @@ public class ChangePasswordIntegrationTest {
         params.put("oldPassword", "abc");
         params.put("newPassword", "newTest&12");
 
-        final Response response = request.with().queryParameters(params).post(URL);
+        final Response response = request.with().queryParams(params).post(URL);
 
         assertEquals(400, response.statusCode());
         assertTrue(response.body().asString().contains("Invalid Old Password"));

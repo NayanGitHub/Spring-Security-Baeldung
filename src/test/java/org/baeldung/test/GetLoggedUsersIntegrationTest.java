@@ -2,6 +2,10 @@ package org.baeldung.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import io.restassured.RestAssured;
+import io.restassured.authentication.FormAuthConfig;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,10 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.authentication.FormAuthConfig;
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.specification.RequestSpecification;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { Application.class, TestDbConfig.class, TestIntegrationConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -61,11 +61,10 @@ public class GetLoggedUsersIntegrationTest {
         }
 
         RestAssured.port = port;
-
-        String URL_PREFIX = "http://localhost:" + String.valueOf(port);
-        LOGGED_USERS_URL = URL_PREFIX + "/loggedUsers";
-        SESSION_REGISTRY_LOGGED_USERS_URL = URL_PREFIX + "/loggedUsersFromSessionRegistry";
-        formConfig = new FormAuthConfig(URL_PREFIX + "/login", "username", "password");
+        RestAssured.baseURI = "http://localhost";
+        LOGGED_USERS_URL = "/loggedUsers";
+        SESSION_REGISTRY_LOGGED_USERS_URL = "/loggedUsersFromSessionRegistry";
+        formConfig = new FormAuthConfig("/login", "username", "password");
     }
 
     @Test

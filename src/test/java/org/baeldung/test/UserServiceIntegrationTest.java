@@ -72,6 +72,7 @@ public class UserServiceIntegrationTest {
         assertNotNull(user.getRoles());
         user.getRoles().stream().filter(r -> r != null).forEach(Role::getId);
         user.getRoles().stream().filter(r -> r != null).forEach(Role::getName);
+        user.getRoles().stream().filter(r -> r != null).forEach(r -> r.getPrivileges());
         user.getRoles().stream().filter(r -> r != null).forEach(r -> r.getPrivileges().stream().filter(p -> p != null).forEach(Privilege::getId));
         user.getRoles().stream().filter(r -> r != null).forEach(r -> r.getPrivileges().stream().filter(p -> p != null).forEach(Privilege::getName));
         user.getRoles().stream().filter(r -> r != null).forEach(r -> r.getPrivileges().stream().map(Privilege::getRoles).forEach(Assert::assertNotNull));
@@ -80,7 +81,7 @@ public class UserServiceIntegrationTest {
     @Test
     public void givenDetachedUser_whenServiceLoadById_thenCorrect() throws EmailExistsException {
         final User user = registerUser();
-        final User user2 = userService.getUserByID(user.getId());
+        final User user2 = userService.getUserByID(user.getId()).get();
         assertEquals(user, user2);
     }
 
@@ -162,7 +163,7 @@ public class UserServiceIntegrationTest {
         userService.createVerificationTokenForUser(user, token);
         final long userId = user.getId();
         userService.getVerificationToken(token).getId();
-        userRepository.delete(userId);
+        userRepository.deleteById(userId);
     }
 
     @Test
@@ -172,8 +173,8 @@ public class UserServiceIntegrationTest {
         userService.createVerificationTokenForUser(user, token);
         final long userId = user.getId();
         final long tokenId = userService.getVerificationToken(token).getId();
-        tokenRepository.delete(tokenId);
-        userRepository.delete(userId);
+        tokenRepository.deleteById(tokenId);
+        userRepository.deleteById(userId);
     }
 
     @Test
@@ -182,7 +183,7 @@ public class UserServiceIntegrationTest {
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
         final long tokenId = userService.getVerificationToken(token).getId();
-        tokenRepository.delete(tokenId);
+        tokenRepository.deleteById(tokenId);
     }
 
     @Test
@@ -205,7 +206,7 @@ public class UserServiceIntegrationTest {
         final long userId = user.getId();
         final String token_status = userService.validateVerificationToken(token);
         assertEquals(token_status, UserService.TOKEN_VALID);
-        user = userService.getUserByID(userId);
+        user = userService.getUserByID(userId).get();
         assertTrue(user.isEnabled());
     }
 
