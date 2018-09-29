@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.WebAttributes;
@@ -35,7 +36,15 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
         final HttpSession session = request.getSession(false);
         if (session != null) {
             session.setMaxInactiveInterval(30 * 60);
-            LoggedUser user = new LoggedUser(authentication.getName(), activeUserStore);
+            
+            String username;
+            if (authentication.getPrincipal() instanceof User) {
+            	username = ((User)authentication.getPrincipal()).getEmail();
+            }
+            else {
+            	username = authentication.getName();
+            }
+            LoggedUser user = new LoggedUser(username, activeUserStore);
             session.setAttribute("user", user);
         }
         clearAuthenticationAttributes(request);
@@ -65,7 +74,15 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
             }
         }
         if (isUser) {
-            return "/homepage.html?user=" + authentication.getName();
+        	 String username;
+             if (authentication.getPrincipal() instanceof User) {
+             	username = ((User)authentication.getPrincipal()).getEmail();
+             }
+             else {
+             	username = authentication.getName();
+             }
+        
+            return "/homepage.html?user="+username;
         } else if (isAdmin) {
             return "/console.html";
         } else {

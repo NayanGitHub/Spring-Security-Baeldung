@@ -120,7 +120,8 @@ public class UserService implements IUserService {
     @Override
     public VerificationToken generateNewVerificationToken(final String existingVerificationToken) {
         VerificationToken vToken = tokenRepository.findByToken(existingVerificationToken);
-        vToken.updateToken(UUID.randomUUID().toString());
+        vToken.updateToken(UUID.randomUUID()
+            .toString());
         vToken = tokenRepository.save(vToken);
         return vToken;
     }
@@ -143,7 +144,8 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserByPasswordResetToken(final String token) {
-        return passwordTokenRepository.findByToken(token).getUser();
+        return passwordTokenRepository.findByToken(token)
+            .getUser();
     }
 
     @Override
@@ -171,7 +173,10 @@ public class UserService implements IUserService {
 
         final User user = verificationToken.getUser();
         final Calendar cal = Calendar.getInstance();
-        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+        if ((verificationToken.getExpiryDate()
+            .getTime()
+            - cal.getTime()
+                .getTime()) <= 0) {
             tokenRepository.delete(verificationToken);
             return TOKEN_EXPIRED;
         }
@@ -189,12 +194,14 @@ public class UserService implements IUserService {
 
     @Override
     public User updateUser2FA(boolean use2FA) {
-        final Authentication curAuth = SecurityContextHolder.getContext().getAuthentication();
+        final Authentication curAuth = SecurityContextHolder.getContext()
+            .getAuthentication();
         User currentUser = (User) curAuth.getPrincipal();
         currentUser.setUsing2FA(use2FA);
         currentUser = repository.save(currentUser);
         final Authentication auth = new UsernamePasswordAuthenticationToken(currentUser, currentUser.getPassword(), curAuth.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        SecurityContextHolder.getContext()
+            .setAuthentication(auth);
         return currentUser;
     }
 
@@ -204,7 +211,19 @@ public class UserService implements IUserService {
 
     @Override
     public List<String> getUsersFromSessionRegistry() {
-        return sessionRegistry.getAllPrincipals().stream().filter((u) -> !sessionRegistry.getAllSessions(u, false).isEmpty()).map(Object::toString).collect(Collectors.toList());
+        return sessionRegistry.getAllPrincipals()
+            .stream()
+            .filter((u) -> !sessionRegistry.getAllSessions(u, false)
+                .isEmpty())
+            .map(o -> {
+                if (o instanceof User) {
+                    return ((User) o).getEmail();
+                } else {
+                    return o.toString();
+                }
+            })
+            .collect(Collectors.toList());
+
     }
 
 }
