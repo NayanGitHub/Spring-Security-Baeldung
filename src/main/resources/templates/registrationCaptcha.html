@@ -62,7 +62,6 @@ color:#000;
     </div>
 
 <script th:inline="javascript">
-/*<![CDATA[*/
 var serverContext = [[@{/}]];
 
 $(document).ready(function () {
@@ -90,7 +89,7 @@ $(document).ready(function () {
 		    		  wordLowercase: /*[[#{error.wordLowercase}]]*/,
 		    		  wordUppercase: /*[[#{error.wordUppercase}]]*/,
 		    	      wordOneNumber: /*[[#{error.wordOneNumber}]]*/,
-		    		  wordOneSpecialChar: /*[[#{error.wordOneSpecialChar}]]*/'
+		    		  wordOneSpecialChar: /*[[#{error.wordOneSpecialChar}]]*/
 		    		}
 		    	}
 		};
@@ -147,7 +146,6 @@ function register(event){
         }
     });
 }
-/*]]>*/
 
 var onReCaptchaSuccess = function(response) {
     $("#captchaError").html("").hide();

@@ -52,7 +52,6 @@ public class RegistrationPasswordLiveTest {
         param.put("matchingPassword", pass);
 
         final Response response = RestAssured.given().formParams(param).accept(MediaType.APPLICATION_JSON_VALUE).post(BASE_URI + "user/registration");
-        System.out.println(response.asString());
         return response.getStatusCode();
     }
 }

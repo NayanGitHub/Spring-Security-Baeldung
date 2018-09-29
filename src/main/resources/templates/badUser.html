@@ -17,7 +17,6 @@
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script th:inline="javascript">
-/*<![CDATA[*/
 var serverContext = [[@{/}]];
 
 function resendToken(){
@@ -39,7 +38,6 @@ function resendToken(){
 $(document).ajaxStart(function() {
     $("title").html("LOADING ...");
 });
-/*]]>*/
 </script>
 
 </div>
