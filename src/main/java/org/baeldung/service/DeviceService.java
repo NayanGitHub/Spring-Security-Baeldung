@@ -53,10 +53,9 @@ public class DeviceService {
 
         try {
             String ip = extractIp(request);
+            String location = getIpLocation(ip);
 
             String deviceDetails = getDeviceDetails(request.getHeader("user-agent"));
-
-            String location = getIpLocation(ip);
 
             DeviceMetadata existingDevice = isUnknownDevice(user.getId(), deviceDetails, location);
 
@@ -75,7 +74,7 @@ public class DeviceService {
             }
 
         } catch (Exception e) {
-            logger.error("An error occurred while extracting device details", e);
+            logger.error("An error occurred while verifying user device or location", e);
         }
 
     }
@@ -97,11 +96,15 @@ public class DeviceService {
     }
 
     private String getDeviceDetails(String userAgent) {
-        Client client = parser.parse(userAgent);
         String deviceDetails = UNKNOWN;
-        if (Objects.nonNull(client)) {
-            deviceDetails = client.userAgent.family + " " + client.userAgent.major + "." + client.userAgent.minor +
-                    " - " + client.os.family + " " + client.os.major + "." + client.os.minor;
+        try {
+            Client client = parser.parse(userAgent);
+            if (Objects.nonNull(client)) {
+                deviceDetails = client.userAgent.family + " " + client.userAgent.major + "." + client.userAgent.minor +
+                        " - " + client.os.family + " " + client.os.major + "." + client.os.minor;
+            }
+        } catch (Exception e) {
+            logger.error("An error occurred when attempting to extract device details", e);
         }
 
         return deviceDetails;
