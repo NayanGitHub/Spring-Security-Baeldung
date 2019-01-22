@@ -54,9 +54,15 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
     }
 
     private void loginNotification(Authentication authentication, HttpServletRequest request) {
-        if (authentication.getPrincipal() instanceof User) {
-            deviceService.verifyDevice(((User)authentication.getPrincipal()), request);
+        try {
+            if (authentication.getPrincipal() instanceof User) {
+                deviceService.verifyDevice(((User)authentication.getPrincipal()), request);
+            }
+        } catch (Exception e) {
+            logger.error("An error occurred while verifying device or location", e);
+            throw new RuntimeException(e);
         }
+
     }
 
     protected void handle(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {

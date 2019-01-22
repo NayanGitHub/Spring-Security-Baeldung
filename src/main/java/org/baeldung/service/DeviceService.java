@@ -2,6 +2,7 @@ package org.baeldung.service;
 
 import com.google.common.base.Strings;
 import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 import org.baeldung.persistence.dao.DeviceMetadataRepository;
 import org.baeldung.persistence.model.DeviceMetadata;
@@ -17,6 +18,7 @@ import ua_parser.Client;
 import ua_parser.Parser;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 
@@ -49,32 +51,27 @@ public class DeviceService {
         this.messages = messages;
     }
 
-    public void verifyDevice(User user, HttpServletRequest request) {
+    public void verifyDevice(User user, HttpServletRequest request) throws IOException, GeoIp2Exception {
 
-        try {
-            String ip = extractIp(request);
-            String location = getIpLocation(ip);
+        String ip = extractIp(request);
+        String location = getIpLocation(ip);
 
-            String deviceDetails = getDeviceDetails(request.getHeader("user-agent"));
+        String deviceDetails = getDeviceDetails(request.getHeader("user-agent"));
 
-            DeviceMetadata existingDevice = isUnknownDevice(user.getId(), deviceDetails, location);
+        DeviceMetadata existingDevice = isUnknownDevice(user.getId(), deviceDetails, location);
 
-            if (Objects.isNull(existingDevice)) {
-                unknownDeviceNotification(deviceDetails, location, ip, user.getEmail(), request.getLocale());
+        if (Objects.isNull(existingDevice)) {
+            unknownDeviceNotification(deviceDetails, location, ip, user.getEmail(), request.getLocale());
 
-                DeviceMetadata deviceMetadata = new DeviceMetadata();
-                deviceMetadata.setUserId(user.getId());
-                deviceMetadata.setLocation(location);
-                deviceMetadata.setDeviceDetails(deviceDetails);
-                deviceMetadata.setLastLoggedIn(new Date());
-                deviceMetadataRepository.save(deviceMetadata);
-            } else {
-                existingDevice.setLastLoggedIn(new Date());
-                deviceMetadataRepository.save(existingDevice);
-            }
-
-        } catch (Exception e) {
-            logger.error("An error occurred while verifying user device or location", e);
+            DeviceMetadata deviceMetadata = new DeviceMetadata();
+            deviceMetadata.setUserId(user.getId());
+            deviceMetadata.setLocation(location);
+            deviceMetadata.setDeviceDetails(deviceDetails);
+            deviceMetadata.setLastLoggedIn(new Date());
+            deviceMetadataRepository.save(deviceMetadata);
+        } else {
+            existingDevice.setLastLoggedIn(new Date());
+            deviceMetadataRepository.save(existingDevice);
         }
 
     }
@@ -97,35 +94,28 @@ public class DeviceService {
 
     private String getDeviceDetails(String userAgent) {
         String deviceDetails = UNKNOWN;
-        try {
-            Client client = parser.parse(userAgent);
-            if (Objects.nonNull(client)) {
-                deviceDetails = client.userAgent.family + " " + client.userAgent.major + "." + client.userAgent.minor +
-                        " - " + client.os.family + " " + client.os.major + "." + client.os.minor;
-            }
-        } catch (Exception e) {
-            logger.error("An error occurred when attempting to extract device details", e);
+
+        Client client = parser.parse(userAgent);
+        if (Objects.nonNull(client)) {
+            deviceDetails = client.userAgent.family + " " + client.userAgent.major + "." + client.userAgent.minor +
+                    " - " + client.os.family + " " + client.os.major + "." + client.os.minor;
         }
 
         return deviceDetails;
     }
 
-    private String getIpLocation(String ip) {
+    private String getIpLocation(String ip) throws IOException, GeoIp2Exception {
 
         String location = UNKNOWN;
 
-        try {
-            InetAddress ipAddress = InetAddress.getByName(ip);
+        InetAddress ipAddress = InetAddress.getByName(ip);
 
-            CityResponse cityResponse = databaseReader.city(ipAddress);
-            if (Objects.nonNull(cityResponse) &&
-                    Objects.nonNull(cityResponse.getCity()) &&
-                    !Strings.isNullOrEmpty(cityResponse.getCity().getName())) {
+        CityResponse cityResponse = databaseReader.city(ipAddress);
+        if (Objects.nonNull(cityResponse) &&
+                Objects.nonNull(cityResponse.getCity()) &&
+                !Strings.isNullOrEmpty(cityResponse.getCity().getName())) {
 
-                location = cityResponse.getCity().getName();
-            }
-        } catch (Exception e) {
-            logger.error("An error occurred when attempting to get Location from ip", e);
+            location = cityResponse.getCity().getName();
         }
 
         return location;
