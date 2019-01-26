@@ -58,7 +58,7 @@ public class DeviceService {
 
         String deviceDetails = getDeviceDetails(request.getHeader("user-agent"));
 
-        DeviceMetadata existingDevice = isUnknownDevice(user.getId(), deviceDetails, location);
+        DeviceMetadata existingDevice = findExistingDevice(user.getId(), deviceDetails, location);
 
         if (Objects.isNull(existingDevice)) {
             unknownDeviceNotification(deviceDetails, location, ip, user.getEmail(), request.getLocale());
@@ -121,7 +121,7 @@ public class DeviceService {
         return location;
     }
 
-    private DeviceMetadata isUnknownDevice(Long userId, String deviceDetails, String location) {
+    private DeviceMetadata findExistingDevice(Long userId, String deviceDetails, String location) {
 
         List<DeviceMetadata> knownDevices = deviceMetadataRepository.findByUserId(userId);
 
