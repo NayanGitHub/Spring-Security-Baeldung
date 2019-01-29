@@ -1,25 +1,23 @@
 package org.baeldung.security;
 
-import java.io.IOException;
-import java.util.Collection;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.baeldung.persistence.model.User;
+import org.baeldung.service.DeviceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Collection;
 
 @Component("myAuthenticationSuccessHandler")
 public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -30,13 +28,16 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
     @Autowired
     ActiveUserStore activeUserStore;
 
+    @Autowired
+    private DeviceService deviceService;
+
     @Override
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
         handle(request, response, authentication);
         final HttpSession session = request.getSession(false);
         if (session != null) {
             session.setMaxInactiveInterval(30 * 60);
-            
+
             String username;
             if (authentication.getPrincipal() instanceof User) {
             	username = ((User)authentication.getPrincipal()).getEmail();
@@ -48,6 +49,20 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
             session.setAttribute("user", user);
         }
         clearAuthenticationAttributes(request);
+
+        loginNotification(authentication, request);
+    }
+
+    private void loginNotification(Authentication authentication, HttpServletRequest request) {
+        try {
+            if (authentication.getPrincipal() instanceof User) {
+                deviceService.verifyDevice(((User)authentication.getPrincipal()), request);
+            }
+        } catch (Exception e) {
+            logger.error("An error occurred while verifying device or location", e);
+            throw new RuntimeException(e);
+        }
+
     }
 
     protected void handle(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
@@ -81,7 +96,7 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
              else {
              	username = authentication.getName();
              }
-        
+
             return "/homepage.html?user="+username;
         } else if (isAdmin) {
             return "/console.html";
